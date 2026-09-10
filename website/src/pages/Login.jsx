@@ -5,9 +5,9 @@ import { FaBuilding, FaLock, FaEnvelope, FaUserTie, FaUser, FaEye, FaEyeSlash } 
 const Login = ({ setUser }) => {
   const [searchParams] = useSearchParams();
   const msg = searchParams.get("msg");
-  const [role, setRole] = useState("dealer"); // dealer or user
-  const [email, setEmail] = useState("amit@sharmarealty.com");
-  const [password, setPassword] = useState("password123");
+  const [role, setRole] = useState("user"); // dealer or user
+  const [email, setEmail] = useState("user@gmail.com");
+  const [password, setPassword] = useState("12345678");
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
@@ -17,9 +17,11 @@ const Login = ({ setUser }) => {
     setRole(selectedRole);
     setErrorMsg("");
     if (selectedRole === "dealer") {
-      setEmail("amit@sharmarealty.com");
+      setEmail("deler@gmail.com");
+      setPassword("123456");
     } else {
-      setEmail("buyer.user@example.com");
+      setEmail("user@gmail.com");
+      setPassword("12345678");
     }
   };
 

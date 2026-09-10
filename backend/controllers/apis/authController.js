@@ -1,6 +1,7 @@
 const envfile = process.env;
 let CryptoJS = require("crypto-js");
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 const helper = require("../../helpers/helper");
 const { Validator } = require("node-input-validator");
 const moment = require('moment');
@@ -572,7 +573,7 @@ module.exports = {
             loginTime: loginTime,
           },
         },
-        ENV.crypto_key,
+        envfile.crypto_key || 'dealconect@2026!!',
         {
           expiresIn: "30d",
         }
