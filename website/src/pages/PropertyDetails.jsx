@@ -172,7 +172,26 @@ const PropertyDetails = ({ user }) => {
                   <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", display: "block" }}>Facing</span>
                   <strong style={{ fontSize: "0.95rem" }}>{property.facing || "Road Facing"}</strong>
                 </div>
+                {property.society && (
+                  <div style={{ gridColumn: "span 2" }}>
+                    <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", display: "block" }}>Society Name</span>
+                    <strong style={{ fontSize: "0.95rem" }}>{property.society}</strong>
+                  </div>
+                )}
+                {property.flat_no && (
+                  <div style={{ gridColumn: "span 2" }}>
+                    <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", display: "block" }}>Flat / House No.</span>
+                    <strong style={{ fontSize: "0.95rem" }}>{property.flat_no}</strong>
+                  </div>
+                )}
               </div>
+
+              {property.other_details && (
+                <div style={{ marginBottom: "1.5rem" }}>
+                  <h3 style={{ fontSize: "1.2rem", fontWeight: "700", marginBottom: "0.75rem" }}>Other Details</h3>
+                  <p style={{ color: "var(--text-muted)", lineHeight: "1.7", whiteSpace: "pre-line" }}>{property.other_details}</p>
+                </div>
+              )}
 
               <h3 style={{ fontSize: "1.2rem", fontWeight: "700", marginBottom: "0.75rem" }}>Description</h3>
               <p style={{ color: "var(--text-muted)", lineHeight: "1.7", whiteSpace: "pre-line" }}>{property.description || "No description available."}</p>

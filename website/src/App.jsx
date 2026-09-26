@@ -30,6 +30,7 @@ import MyDeals from "./pages/dealer/MyDeals";
 import SubscriptionPlan from "./pages/dealer/SubscriptionPlan";
 import Notifications from "./pages/dealer/Notifications";
 import DealerSettings from "./pages/dealer/DealerSettings";
+import UserLayout from "./pages/user/UserLayout";
 import UserDashboard from "./pages/user/UserDashboard";
 
 function App() {
@@ -82,8 +83,10 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
 
             {/* User Dashboard */}
-            <Route path="/user/dashboard" element={user ? <UserDashboard user={user} setUser={setUser} /> : <Navigate to="/login?msg=login_required" replace />} />
-            <Route path="/user/post-requirement" element={user ? <AddRequirement user={user} /> : <Navigate to="/login?msg=login_required" replace />} />
+            <Route path="/user" element={user ? <UserLayout user={user} /> : <Navigate to="/login?msg=login_required" replace />}>
+              <Route path="dashboard" element={<UserDashboard user={user} setUser={setUser} />} />
+              <Route path="post-requirement" element={<AddRequirement user={user} />} />
+            </Route>
 
             {/* Dealer Dashboard */}
             <Route path="/dealer" element={user ? <DealerLayout user={user} /> : <Navigate to="/login?msg=login_required" replace />}>

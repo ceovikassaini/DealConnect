@@ -83,6 +83,18 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       defaultValue: "'Plot'"
     },
+    society: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    flat_no: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    other_details: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
     badge_id: {
       type: DataTypes.INTEGER,
       allowNull: true

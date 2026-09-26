@@ -207,7 +207,10 @@ module.exports = {
         facing: facing || "Road Facing",
         description: description || "",
         dealerName: dealerName || "Sharma Associates",
-        propertyType: propertyType || "Plot"
+        propertyType: propertyType || "Plot",
+        society: req.body.society || null,
+        flat_no: req.body.flat_no || null,
+        other_details: req.body.other_details || null
       });
 
       console.log("✅ Step 1: Created record in 'property' table with ID:", newProperty.id);

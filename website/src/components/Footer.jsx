@@ -59,7 +59,6 @@ const Footer = () => {
               <li><Link to="/about" style={footerLinkStyle}>About Us</Link></li>
               <li><Link to="/#how-it-works" style={footerLinkStyle}>How It Works</Link></li>
               <li><Link to="/#testimonials" style={footerLinkStyle}>Success Stories</Link></li>
-              <li><Link to="/blogs" style={footerLinkStyle}>Blog</Link></li>
               <li><Link to="/contact" style={footerLinkStyle}>Contact Us</Link></li>
             </ul>
           </div>
@@ -69,7 +68,6 @@ const Footer = () => {
             <h4 style={{ color: "#ffffff", fontSize: "1rem", marginBottom: "1.25rem" }}>Resources</h4>
             <ul style={linkListStyle}>
               <li><Link to="/faq" style={footerLinkStyle}>Help Center</Link></li>
-              <li><Link to="/blogs" style={footerLinkStyle}>Guides</Link></li>
               <li><Link to="/privacy" style={footerLinkStyle}>Privacy Policy</Link></li>
               <li><Link to="/terms" style={footerLinkStyle}>Terms & Conditions</Link></li>
             </ul>

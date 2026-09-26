@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { FaBuilding, FaChevronDown, FaSun, FaMoon, FaUserAlt, FaSignOutAlt } from "react-icons/fa";
+import { FaBuilding, FaSun, FaMoon, FaUserAlt, FaSignOutAlt } from "react-icons/fa";
 
 const Header = ({ darkMode, setDarkMode, user, setUser }) => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -45,7 +44,7 @@ const Header = ({ darkMode, setDarkMode, user, setUser }) => {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav style={{ display: "flex", alignItems: "center", gap: "1.75rem" }}>
+        <nav style={{ display: "flex", alignItems: "center", gap: "0.75rem", whiteSpace: "nowrap" }}>
           <NavLink to="/" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
             Home
           </NavLink>
@@ -65,45 +64,15 @@ const Header = ({ darkMode, setDarkMode, user, setUser }) => {
             Pricing
           </NavLink>
           
-          {/* Resources Dropdown */}
-          <div style={{ position: "relative" }}>
-            <button 
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-              style={{
-                background: "none",
-                color: "var(--text-main)",
-                fontWeight: "600",
-                fontSize: "0.95rem",
-                display: "flex",
-                alignItems: "center",
-                gap: "0.3rem"
-              }}
-            >
-              Resources <FaChevronDown size={12} />
-            </button>
-            {dropdownOpen && (
-              <div 
-                onClick={() => setDropdownOpen(false)}
-                style={{
-                  position: "absolute",
-                  top: "120%",
-                  left: "0",
-                  backgroundColor: "var(--bg-card)",
-                  border: "1px solid var(--border-color)",
-                  borderRadius: "var(--radius-md)",
-                  boxShadow: "var(--shadow-lg)",
-                  minWidth: "160px",
-                  padding: "0.5rem 0",
-                  zIndex: 200
-                }}
-              >
-                <Link to="/blogs" style={dropdownItemStyle}>Blogs & News</Link>
-                <Link to="/about" style={dropdownItemStyle}>About Us</Link>
-                <Link to="/contact" style={dropdownItemStyle}>Contact Us</Link>
-                <Link to="/faq" style={dropdownItemStyle}>FAQ</Link>
-              </div>
-            )}
-          </div>
+          <NavLink to="/about" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+            About Us
+          </NavLink>
+          <NavLink to="/faq" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+            FAQs
+          </NavLink>
+          <NavLink to="/contact" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+            Contact Us
+          </NavLink>
         </nav>
 
         {/* Right Actions */}
@@ -160,15 +129,6 @@ const Header = ({ darkMode, setDarkMode, user, setUser }) => {
       </div>
     </header>
   );
-};
-
-const dropdownItemStyle = {
-  display: "block",
-  padding: "0.5rem 1rem",
-  color: "var(--text-main)",
-  fontSize: "0.9rem",
-  fontWeight: "500",
-  textDecoration: "none"
 };
 
 export default Header;

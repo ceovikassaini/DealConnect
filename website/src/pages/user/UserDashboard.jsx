@@ -493,8 +493,8 @@ const UserDashboard = ({ user, setUser }) => {
   };
 
   return (
-    <div style={{ backgroundColor: "var(--bg-main)", minHeight: "80vh", padding: "3rem 0" }}>
-      <div className="container" style={{ maxWidth: "900px" }}>
+    <div>
+      <div style={{ maxWidth: "1000px", width: "100%" }}>
         
         {/* Global Feedback Banner */}
         {msg && (

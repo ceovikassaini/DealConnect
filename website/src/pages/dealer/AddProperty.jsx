@@ -39,6 +39,9 @@ const AddProperty = ({ user }) => {
     height: "60",
     width: "15",
     facing: "Road Facing",
+    society: "",
+    flat_no: "",
+    other_details: "",
     description: "",
     images: [
       "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"
@@ -314,6 +317,43 @@ const AddProperty = ({ user }) => {
                 style={inputStyle} 
               />
             </div>
+          </div>
+
+          {/* Society & Flat No */}
+          <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "1rem", marginBottom: "1.25rem" }}>
+            <div>
+              <label style={labelStyle}>Society Name</label>
+              <input 
+                type="text" 
+                placeholder="e.g. TDI City, Omaxe Heights" 
+                value={formData.society} 
+                onChange={(e) => setFormData({ ...formData, society: e.target.value })} 
+                style={inputStyle} 
+              />
+            </div>
+
+            <div>
+              <label style={labelStyle}>Flat No. / House No.</label>
+              <input 
+                type="text" 
+                placeholder="e.g. A-402" 
+                value={formData.flat_no} 
+                onChange={(e) => setFormData({ ...formData, flat_no: e.target.value })} 
+                style={inputStyle} 
+              />
+            </div>
+          </div>
+
+          {/* Other Details */}
+          <div style={{ marginBottom: "1.25rem" }}>
+            <label style={labelStyle}>Other Details</label>
+            <textarea 
+              rows="2" 
+              placeholder="e.g. Corner flat, near market..." 
+              value={formData.other_details} 
+              onChange={(e) => setFormData({ ...formData, other_details: e.target.value })} 
+              style={inputStyle}
+            ></textarea>
           </div>
 
           {/* Description */}
