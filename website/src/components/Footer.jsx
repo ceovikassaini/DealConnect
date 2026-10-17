@@ -16,18 +16,40 @@ const Footer = () => {
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
               <div style={{
-                width: "38px",
-                height: "38px",
-                background: "linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)",
-                borderRadius: "10px",
+                position: "relative",
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                background: "linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)",
+                padding: "2px",
+                boxShadow: "0 4px 14px rgba(59, 130, 246, 0.35)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                color: "#ffffff"
+                overflow: "hidden",
+                flexShrink: 0
               }}>
-                <FaBuilding size={20} />
+                <img 
+                  src="/logo.png" 
+                  alt="DealConnect Logo" 
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    backgroundColor: "#ffffff",
+                    display: "block"
+                  }} 
+                />
               </div>
-              <span style={{ fontSize: "1.3rem", fontWeight: "800", color: "#ffffff" }}>DealConnect</span>
+              <div style={{ fontWeight: "900", fontSize: "1.35rem", letterSpacing: "-0.02em" }}>
+                <span style={{ color: "#ffffff" }}>Deal</span>
+                <span style={{
+                  background: "linear-gradient(135deg, #38bdf8 0%, #3b82f6 50%, #6366f1 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent"
+                }}>Connect</span>
+              </div>
             </div>
             <p style={{ fontSize: "0.9rem", lineHeight: "1.6", marginBottom: "1.25rem" }}>
               India's leading property dealer network platform. Connect, match requirements and close more deals faster.

@@ -53,20 +53,69 @@ const Header = ({ darkMode, setDarkMode, user, setUser }) => {
         <Link 
           to="/" 
           onClick={() => setMobileMenuOpen(false)}
-          style={{ display: "flex", alignItems: "center", gap: "0.55rem", textDecoration: "none", flexShrink: 0 }}
+          style={{ display: "flex", alignItems: "center", gap: "0.7rem", textDecoration: "none", flexShrink: 0 }}
         >
-          <img 
-            src="/logo.png" 
-            alt="DealConnect Logo" 
-            style={{ height: "38px", width: "auto", objectFit: "contain" }} 
-            onError={(e) => { e.target.style.display = "none"; }}
-          />
+          <div style={{
+            position: "relative",
+            width: "44px",
+            height: "44px",
+            borderRadius: "50%",
+            background: "linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)",
+            padding: "2px",
+            boxShadow: "0 4px 14px rgba(59, 130, 246, 0.35)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            overflow: "hidden",
+            flexShrink: 0
+          }}>
+            <img 
+              src="/logo.png" 
+              alt="DealConnect Logo" 
+              style={{
+                width: "100%",
+                height: "100%",
+                borderRadius: "50%",
+                objectFit: "cover",
+                backgroundColor: "#ffffff",
+                display: "block"
+              }} 
+            />
+          </div>
           <div>
-            <div style={{ fontWeight: "800", fontSize: "1.15rem", color: "var(--text-main)", lineHeight: "1.1", letterSpacing: "-0.02em" }}>
-              DealConnect
+            <div style={{ 
+              fontWeight: "900", 
+              fontSize: "1.25rem", 
+              lineHeight: "1.1", 
+              letterSpacing: "-0.03em",
+              display: "flex",
+              alignItems: "center"
+            }}>
+              <span style={{ color: "var(--text-main)" }}>Deal</span>
+              <span style={{
+                background: "linear-gradient(135deg, #38bdf8 0%, #3b82f6 50%, #6366f1 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent"
+              }}>Connect</span>
             </div>
-            <div style={{ fontSize: "0.68rem", color: "var(--text-muted)", fontWeight: "600" }}>
-              Dealer & Buyer Platform
+            <div style={{ 
+              fontSize: "0.68rem", 
+              color: "var(--text-muted)", 
+              fontWeight: "700",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.35rem",
+              marginTop: "2px"
+            }}>
+              <span style={{
+                width: "6px",
+                height: "6px",
+                borderRadius: "50%",
+                backgroundColor: "#10b981",
+                boxShadow: "0 0 6px rgba(16, 185, 129, 0.8)",
+                display: "inline-block"
+              }} />
+              <span>Dealer & Buyer Platform</span>
             </div>
           </div>
         </Link>
