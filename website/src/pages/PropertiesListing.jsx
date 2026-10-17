@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { FaSearch, FaMapMarkerAlt, FaFilter, FaCheckCircle } from "react-icons/fa";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
+import { FaSearch, FaMapMarkerAlt, FaFilter, FaCheckCircle, FaLock, FaCrown } from "react-icons/fa";
 
 const inputStyle = {
   width: "100%",
@@ -13,8 +13,10 @@ const inputStyle = {
   outline: "none"
 };
 
-const PropertiesListing = () => {
+const PropertiesListing = ({ user }) => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const isSubscribed = user?.isSubscribed === true || user?.subscriptionStatus === "active" || (user?.subscriptionPlan && user?.subscriptionPlan !== "Free" && user?.subscriptionPlan !== "None");
   const [properties, setProperties] = useState([]);
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
@@ -224,6 +226,12 @@ const PropertiesListing = () => {
                 <Link 
                   key={prop.id} 
                   to={`/properties/${prop.id}`} 
+                  onClick={(e) => {
+                    if (!isSubscribed) {
+                      e.preventDefault();
+                      navigate("/pricing?msg=subscription_required");
+                    }
+                  }}
                   className="card"
                   style={{ 
                     textDecoration: "none", 
@@ -254,6 +262,29 @@ const PropertiesListing = () => {
                     <span className="badge badge-verified" style={{ position: "absolute", top: "12px", left: "12px" }}>
                       {prop.badge || "Verified"}
                     </span>
+
+                    {!isSubscribed && (
+                      <span 
+                        title="Subscription Required to View Details"
+                        style={{ 
+                          position: "absolute", 
+                          top: "12px", 
+                          right: "12px", 
+                          backgroundColor: "#d97706", 
+                          color: "#ffffff", 
+                          padding: "0.25rem 0.6rem", 
+                          borderRadius: "20px", 
+                          fontSize: "0.7rem", 
+                          fontWeight: "800",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.3rem",
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.2)"
+                        }}
+                      >
+                        <FaLock size={10} /> Subscription Required
+                      </span>
+                    )}
                   </div>
 
                   {/* Body Content */}

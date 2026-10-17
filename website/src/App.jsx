@@ -4,6 +4,7 @@ import "./styles/dealconnect.css";
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import ScrollToTop from "./utils/ScrollToTop";
 
 import HomePage from "./pages/HomePage";
 import PropertiesListing from "./pages/PropertiesListing";
@@ -34,9 +35,11 @@ import UserLayout from "./pages/user/UserLayout";
 import UserDashboard from "./pages/user/UserDashboard";
 
 function App() {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem("dealconnect_theme") === "dark";
+  });
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem("dealconnect_user");
+    const saved = localStorage.getItem("dealconnect_user") || localStorage.getItem("user");
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
@@ -46,28 +49,33 @@ function App() {
   useEffect(() => {
     if (user) {
       localStorage.setItem("dealconnect_user", JSON.stringify(user));
+      localStorage.setItem("user", JSON.stringify(user));
     } else {
       localStorage.removeItem("dealconnect_user");
+      localStorage.removeItem("user");
     }
   }, [user]);
 
   useEffect(() => {
     if (darkMode) {
       document.documentElement.setAttribute("data-theme", "dark");
+      localStorage.setItem("dealconnect_theme", "dark");
     } else {
       document.documentElement.removeAttribute("data-theme");
+      localStorage.setItem("dealconnect_theme", "light");
     }
   }, [darkMode]);
 
   return (
     <Router>
+      <ScrollToTop />
       <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
         <Header darkMode={darkMode} setDarkMode={setDarkMode} user={user} setUser={setUser} />
         
         <div style={{ flex: 1 }}>
           <Routes>
             <Route path="/" element={<HomePage user={user} />} />
-            <Route path="/properties" element={<PropertiesListing />} />
+            <Route path="/properties" element={<PropertiesListing user={user} />} />
             <Route path="/properties/:id" element={<PropertyDetails user={user} />} />
             <Route path="/requirements" element={<RequirementsListing user={user} />} />
             <Route path="/requirements/:id" element={<RequirementsListing user={user} />} />

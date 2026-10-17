@@ -57,6 +57,7 @@ const SignUp = ({ setUser }) => {
             localStorage.setItem("token", userObj.token);
           }
           localStorage.setItem("user", JSON.stringify(userObj));
+          localStorage.setItem("dealconnect_user", JSON.stringify(userObj));
           setUser(userObj);
           if (userObj.role === "dealer") {
             navigate("/dealer/dashboard");

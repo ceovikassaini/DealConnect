@@ -31,10 +31,12 @@ io.on("connection", (socket) => {
 const db = require('./models');
 require('./models/associations')(db);
 
-// Ensure singular property models and dealer_requirements are synchronized
-if (db.property) db.property.sync({ alter: false });
-if (db.property_images) db.property_images.sync({ alter: false });
-if (db.dealer_requirements) db.dealer_requirements.sync({ alter: false });
+// Ensure singular property models and dealer_requirements are synchronized non-blockingly
+setTimeout(() => {
+  if (db.property) db.property.sync().catch(() => {});
+  if (db.property_images) db.property_images.sync().catch(() => {});
+  if (db.dealer_requirements) db.dealer_requirements.sync().catch(() => {});
+}, 500);
 
 const AdminRouter = require('./routes/route_admin');
 const apisRouter = require('./routes/apis');

@@ -24,6 +24,10 @@ module.exports = (io) => {
   router.post('/forgotPassword', authController.forgotPassword);
   router.post('/edit_profile', authController.edit_profile);
   router.post('/change_password', authController.change_password);
+  router.post('/buy_subscription', authController.buySubscription);
+  router.post('/subscriptions/buy', authController.buySubscription);
+  router.get('/subscriptions', authController.getSubscriptions);
+  router.get('/get_subscriptions', authController.getSubscriptions);
 
   // Categories & Requirements
   router.get('/categories', requirementcontroller.getCategories);

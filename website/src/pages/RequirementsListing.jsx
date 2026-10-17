@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import {
   FaMapMarkerAlt,
   FaTag,
@@ -12,10 +12,14 @@ import {
 } from "react-icons/fa";
 
 const RequirementsListing = ({ user }) => {
+  const navigate = useNavigate();
+
   // Redirect to login if user is not logged in
   if (!user) {
     return <Navigate to="/login?msg=login_required" replace />;
   }
+
+  const isSubscribed = user?.isSubscribed === true || user?.subscriptionStatus === "active" || (user?.subscriptionPlan && user?.subscriptionPlan !== "Free" && user?.subscriptionPlan !== "None");
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
@@ -116,6 +120,12 @@ const RequirementsListing = ({ user }) => {
 
           <Link
             to={user.role === "dealer" || user.role === 2 || user.role === "2" ? "/dealer/add-requirement" : "/user/dashboard"}
+            onClick={(e) => {
+              if (!isSubscribed) {
+                e.preventDefault();
+                navigate("/pricing?msg=subscription_required");
+              }
+            }}
             className="btn-primary"
             style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}
           >

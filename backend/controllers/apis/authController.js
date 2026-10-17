@@ -956,5 +956,51 @@ module.exports = {
       console.error(error);
       return helper.error(res, error);
     }
+  },
+
+  buySubscription: async (req, res) => {
+    try {
+      const { user_id, subscription_id, plan_name, price, payment_method, transaction_id } = req.body;
+      const { subscription_buy } = require('../../models');
+
+      const startDate = new Date();
+      const endDate = new Date();
+      endDate.setDate(startDate.getDate() + 30); // 30 days valid plan
+
+      const newRecord = await subscription_buy.create({
+        user_id: user_id ? parseInt(user_id) : 0,
+        subscription_id: subscription_id ? parseInt(subscription_id) : 0,
+        plan_name: plan_name || "Basic Plan",
+        price: price ? String(price) : "0",
+        payment_method: payment_method || "Online",
+        transaction_id: transaction_id || `TXN_${Date.now()}`,
+        status: "Active",
+        start_date: startDate,
+        end_date: endDate
+      });
+
+      console.log("✅ Subscription purchase record saved to 'subscription_buy' table with ID:", newRecord.id);
+
+      return helper.success(res, "Subscription plan activated and recorded in database", {
+        subscription: newRecord
+      });
+    } catch (error) {
+      console.error("❌ Error saving to subscription_buy table:", error);
+      return helper.error(res, error);
+    }
+  },
+
+  getSubscriptions: async (req, res) => {
+    try {
+      const { subscription } = require('../../models');
+      let list = [];
+      if (subscription) {
+        list = await subscription.findAll({ order: [['id', 'ASC']] });
+      }
+      return helper.success(res, "Subscriptions fetched successfully", { list });
+    } catch (error) {
+      console.error("❌ Error fetching subscriptions from DB:", error);
+      return helper.error(res, error);
+    }
   }
 };

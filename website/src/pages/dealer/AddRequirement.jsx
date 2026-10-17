@@ -1,10 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaPlus, FaSpinner } from "react-icons/fa";
+import { FaPlus, FaSpinner, FaCrown, FaLock } from "react-icons/fa";
 
 const AddRequirement = ({ user }) => {
   const navigate = useNavigate();
   const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+
+  const isSubscribed = user?.isSubscribed === true || user?.subscriptionStatus === "active" || (user?.subscriptionPlan && user?.subscriptionPlan !== "Free" && user?.subscriptionPlan !== "None");
+
+  if (!isSubscribed) {
+    return (
+      <div style={{ maxWidth: "680px", margin: "3rem auto", textAlign: "center", padding: "2.5rem", backgroundColor: "var(--bg-card)", borderRadius: "20px", border: "1px solid var(--border-color)", boxShadow: "0 10px 30px rgba(0,0,0,0.08)" }}>
+        <div style={{ width: "64px", height: "64px", borderRadius: "50%", backgroundColor: "#fef3c7", color: "#d97706", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1.25rem auto" }}>
+          <FaCrown size={30} />
+        </div>
+        <h2 style={{ fontSize: "1.8rem", fontWeight: "800", marginBottom: "0.75rem" }}>
+          Subscription Plan Required
+        </h2>
+        <p style={{ color: "var(--text-muted)", fontSize: "1rem", lineHeight: "1.6", marginBottom: "1.75rem" }}>
+          Ager tuhasnu requirement post karni hai, ta pehla subscription plan laine pane. Subscribe now to post requirements and match with top verified dealers!
+        </p>
+        <button onClick={() => navigate("/pricing")} className="btn-primary" style={{ padding: "0.85rem 2rem", fontSize: "1rem", margin: "0 auto", display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
+          <FaCrown /> Buy Subscription Plan Now
+        </button>
+      </div>
+    );
+  }
 
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);

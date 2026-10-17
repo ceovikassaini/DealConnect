@@ -4,8 +4,9 @@ import { FaPlus, FaTrash, FaImage, FaUpload, FaSpinner, FaCrown, FaLock, FaHands
 
 const AddProperty = ({ user }) => {
   const navigate = useNavigate();
+  const isSubscribed = user?.isSubscribed === true || user?.subscriptionStatus === "active" || (user?.subscriptionPlan && user?.subscriptionPlan !== "Free" && user?.subscriptionPlan !== "None");
 
-  if (!user?.isSubscribed) {
+  if (!isSubscribed) {
     return (
       <div style={{ maxWidth: "680px", margin: "3rem auto", textAlign: "center", padding: "2.5rem", backgroundColor: "var(--bg-card)", borderRadius: "20px", border: "1px solid var(--border-color)", boxShadow: "0 10px 30px rgba(0,0,0,0.08)" }}>
         <div style={{ width: "64px", height: "64px", borderRadius: "50%", backgroundColor: "#fef3c7", color: "#d97706", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1.25rem auto" }}>

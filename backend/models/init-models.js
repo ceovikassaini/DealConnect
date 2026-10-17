@@ -1,12 +1,12 @@
 var DataTypes = require("sequelize").DataTypes;
-var _requirements = require("./requirements");
+var _subscription_buy = require("./subscription_buy");
 
 function initModels(sequelize) {
-  var requirements = _requirements(sequelize, DataTypes);
+  var subscription_buy = _subscription_buy(sequelize, DataTypes);
 
 
   return {
-    requirements,
+    subscription_buy,
   };
 }
 module.exports = initModels;

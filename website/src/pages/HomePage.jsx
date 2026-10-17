@@ -8,6 +8,7 @@ import {
 
 const HomePage = ({ user }) => {
   const navigate = useNavigate();
+  const isSubscribed = user?.isSubscribed === true || user?.subscriptionStatus === "active" || (user?.subscriptionPlan && user?.subscriptionPlan !== "Free" && user?.subscriptionPlan !== "None");
   const [searchTab, setSearchTab] = useState("properties"); // properties or requirements
   const [locationInput, setLocationInput] = useState("");
   const [typeInput, setTypeInput] = useState("All Types");
@@ -488,6 +489,12 @@ const HomePage = ({ user }) => {
                   <Link 
                     key={prop.id} 
                     to={`/properties/${prop.id}`} 
+                    onClick={(e) => {
+                      if (!isSubscribed) {
+                        e.preventDefault();
+                        navigate("/pricing?msg=subscription_required");
+                      }
+                    }}
                     className="card"
                     style={{ 
                       textDecoration: "none", 

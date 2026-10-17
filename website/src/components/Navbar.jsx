@@ -188,6 +188,37 @@ const Navbar = ({ toggleSidebar, closeSidebar, windowWidth }) => {
               )}
 
             </div>
+
+            {/* Direct Visible Logout Button */}
+            <button
+              onClick={logout}
+              type="button"
+              className="btn btn-sm d-flex align-items-center ms-3"
+              style={{
+                background: "rgba(239, 68, 68, 0.1)",
+                color: "#ef4444",
+                border: "1px solid rgba(239, 68, 68, 0.3)",
+                borderRadius: "8px",
+                fontWeight: "700",
+                padding: "6px 14px",
+                fontSize: "13px",
+                gap: "6px",
+                cursor: "pointer",
+                transition: "all 0.2s ease"
+              }}
+              title="Logout"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "#ef4444";
+                e.currentTarget.style.color = "#ffffff";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)";
+                e.currentTarget.style.color = "#ef4444";
+              }}
+            >
+              <i className="material-icons" style={{ fontSize: "16px" }}>logout</i>
+              <span>Logout</span>
+            </button>
           </li>
         </ul>
 

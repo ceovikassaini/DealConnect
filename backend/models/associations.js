@@ -2,7 +2,12 @@ module.exports = (db) => {
   if (db._associationsLoaded) return;
   db._associationsLoaded = true;
 
-  const { users, property, property_images, properties, dealer_requirements, requirements, categories, sub_categories, deals, dealer_subscriptions, users_vehicle, users_license, vehicle_images, payments, notifications, jobs, users_identity_verification, users_nsw, users_vehicle_insurance, tax_rto, geofences, geofence_cities, geofence_areas, geofence_pincodes, ratings, promo_codes, promo_code_users, vehicle_services, users_sos, activity_logs } = db;
+  const { users, property, property_images, properties, dealer_requirements, requirements, categories, sub_categories, deals, dealer_subscriptions, subscription_buy, users_vehicle, users_license, vehicle_images, payments, notifications, jobs, users_identity_verification, users_nsw, users_vehicle_insurance, tax_rto, geofences, geofence_cities, geofence_areas, geofence_pincodes, ratings, promo_codes, promo_code_users, vehicle_services, users_sos, activity_logs } = db;
+
+  if (users && subscription_buy) {
+    users.hasMany(subscription_buy, { foreignKey: 'user_id', as: 'subscription_buys' });
+    subscription_buy.belongsTo(users, { foreignKey: 'user_id', as: 'user' });
+  }
 
   if (requirements && categories) {
     requirements.belongsTo(categories, { foreignKey: 'category_id', as: 'category' });

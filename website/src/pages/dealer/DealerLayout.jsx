@@ -2,10 +2,12 @@ import React from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { 
   FaChartPie, FaBuilding, FaPlusSquare, FaListAlt, 
-  FaHandshake, FaBell, FaCrown, FaCog, FaUserTie
+  FaHandshake, FaBell, FaCrown, FaCog, FaUserTie, FaSignOutAlt
 } from "react-icons/fa";
 
 const DealerLayout = ({ user }) => {
+  const isSubscribed = user?.isSubscribed === true || user?.subscriptionStatus === "active" || (user?.subscriptionPlan && user?.subscriptionPlan !== "Free" && user?.subscriptionPlan !== "None");
+
   return (
     <div style={{ display: "flex", minHeight: "85vh", backgroundColor: "var(--bg-main)" }}>
       {/* Sidebar Navigation */}
@@ -32,13 +34,13 @@ const DealerLayout = ({ user }) => {
         <NavLink to="/dealer/my-properties" className={navClass}>
           <FaBuilding /> My Properties
         </NavLink>
-        <NavLink to="/dealer/add-property" className={navClass}>
+        <NavLink to={isSubscribed ? "/dealer/add-property" : "/pricing?msg=subscription_required"} className={navClass}>
           <FaPlusSquare /> Add Property
         </NavLink>
         <NavLink to="/dealer/my-requirements" className={navClass}>
           <FaListAlt /> My Requirements
         </NavLink>
-        <NavLink to="/dealer/add-requirement" className={navClass}>
+        <NavLink to={isSubscribed ? "/dealer/add-requirement" : "/pricing?msg=subscription_required"} className={navClass}>
           <FaPlusSquare /> Add Requirement
         </NavLink>
         <NavLink to="/dealer/my-deals" className={navClass}>
@@ -53,6 +55,42 @@ const DealerLayout = ({ user }) => {
         <NavLink to="/dealer/settings" className={navClass}>
           <FaCog /> Settings
         </NavLink>
+
+        <div style={{ marginTop: "auto", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}>
+          <button
+            onClick={() => {
+              localStorage.removeItem("dealconnect_user");
+              localStorage.removeItem("user");
+              localStorage.removeItem("token");
+              window.location.href = "/";
+            }}
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.75rem",
+              padding: "0.75rem 1rem",
+              borderRadius: "var(--radius-md)",
+              fontSize: "0.9rem",
+              fontWeight: "700",
+              background: "rgba(239, 68, 68, 0.08)",
+              border: "1px solid rgba(239, 68, 68, 0.25)",
+              color: "#ef4444",
+              cursor: "pointer",
+              transition: "all 0.2s"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#ef4444";
+              e.currentTarget.style.color = "#ffffff";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(239, 68, 68, 0.08)";
+              e.currentTarget.style.color = "#ef4444";
+            }}
+          >
+            <FaSignOutAlt /> Logout
+          </button>
+        </div>
       </aside>
 
       {/* Main Content Area */}

@@ -11,7 +11,27 @@ const PropertyDetails = ({ user }) => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
-  const isSubscribed = user?.isSubscribed || false;
+  const isSubscribed = user?.isSubscribed === true || user?.subscriptionStatus === "active" || (user?.subscriptionPlan && user?.subscriptionPlan !== "Free" && user?.subscriptionPlan !== "None");
+
+  const subId = Number(user?.subscriptionId || user?.subscription_id || 0);
+  const planName = (user?.subscriptionPlan || "").toLowerCase();
+  
+  // Basic Plan check (subId 1 or name containing basic)
+  const isBasicPlan = subId === 1 || planName.includes("basic");
+
+  // Pro Plan is ONLY true if user is subscribed AND NOT on Basic Plan
+  const isProPlan = isSubscribed && !isBasicPlan && (
+    subId === 2 || 
+    subId === 4 || 
+    planName.includes("professional") || 
+    planName.includes("enterprise")
+  );
+
+  useEffect(() => {
+    if (!isSubscribed) {
+      navigate("/pricing?msg=subscription_required");
+    }
+  }, [isSubscribed, navigate]);
 
   useEffect(() => {
     setLoading(true);
@@ -64,7 +84,7 @@ const PropertyDetails = ({ user }) => {
   };
 
   const handleContactClick = (e) => {
-    if (!isSubscribed) {
+    if (!isProPlan) {
       e.preventDefault();
       setShowSubscriptionModal(true);
     }
@@ -175,13 +195,17 @@ const PropertyDetails = ({ user }) => {
                 {property.society && (
                   <div style={{ gridColumn: "span 2" }}>
                     <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", display: "block" }}>Society Name</span>
-                    <strong style={{ fontSize: "0.95rem" }}>{property.society}</strong>
+                    <strong style={{ fontSize: "0.95rem", color: isProPlan ? "inherit" : "#d97706" }}>
+                      {isProPlan ? property.society : "🔒 Locked (User Professional Plan Required)"}
+                    </strong>
                   </div>
                 )}
                 {property.flat_no && (
                   <div style={{ gridColumn: "span 2" }}>
                     <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", display: "block" }}>Flat / House No.</span>
-                    <strong style={{ fontSize: "0.95rem" }}>{property.flat_no}</strong>
+                    <strong style={{ fontSize: "0.95rem", color: isProPlan ? "inherit" : "#d97706" }}>
+                      {isProPlan ? property.flat_no : "🔒 Locked (User Professional Plan Required)"}
+                    </strong>
                   </div>
                 )}
               </div>
@@ -189,12 +213,39 @@ const PropertyDetails = ({ user }) => {
               {property.other_details && (
                 <div style={{ marginBottom: "1.5rem" }}>
                   <h3 style={{ fontSize: "1.2rem", fontWeight: "700", marginBottom: "0.75rem" }}>Other Details</h3>
-                  <p style={{ color: "var(--text-muted)", lineHeight: "1.7", whiteSpace: "pre-line" }}>{property.other_details}</p>
+                  {isProPlan ? (
+                    <p style={{ color: "var(--text-muted)", lineHeight: "1.7", whiteSpace: "pre-line" }}>{property.other_details}</p>
+                  ) : (
+                    <div style={{ backgroundColor: "rgba(245, 158, 11, 0.1)", padding: "1rem", borderRadius: "12px", border: "1px dashed #f59e0b", color: "#b45309", fontSize: "0.9rem", fontWeight: "600", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <FaLock /> Other details locked. User Professional Plan required to view.
+                      </div>
+                      <button onClick={() => navigate("/pricing")} className="btn-primary" style={{ padding: "0.3rem 0.8rem", fontSize: "0.8rem" }}>
+                        Upgrade Plan
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
 
               <h3 style={{ fontSize: "1.2rem", fontWeight: "700", marginBottom: "0.75rem" }}>Description</h3>
-              <p style={{ color: "var(--text-muted)", lineHeight: "1.7", whiteSpace: "pre-line" }}>{property.description || "No description available."}</p>
+              {isProPlan ? (
+                <p style={{ color: "var(--text-muted)", lineHeight: "1.7", whiteSpace: "pre-line" }}>{property.description || "No description available."}</p>
+              ) : (
+                <div style={{ position: "relative", borderRadius: "12px", overflow: "hidden", backgroundColor: "var(--bg-main)", padding: "1.25rem", border: "1px dashed var(--border-color)" }}>
+                  <p style={{ color: "var(--text-muted)", lineHeight: "1.7", filter: "blur(4px)", select: "none" }}>
+                    This premium property details section is reserved for User Professional Plan subscribers. Unlock complete dealer contacts, full address details, and documentation.
+                  </p>
+                  <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.35)", backdropFilter: "blur(2px)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "0.5rem", color: "#ffffff", padding: "1rem" }}>
+                    <FaLock size={22} style={{ color: "#f59e0b" }} />
+                    <strong style={{ fontSize: "1rem" }}>Full Description Locked</strong>
+                    <span style={{ fontSize: "0.8rem", color: "#fef3c7" }}>Upgrade to User Professional Plan (₹499) to view full property details.</span>
+                    <button onClick={() => navigate("/pricing")} className="btn-primary" style={{ padding: "0.4rem 1rem", fontSize: "0.85rem", marginTop: "0.25rem" }}>
+                      <FaCrown /> Upgrade to Professional Plan
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -214,7 +265,7 @@ const PropertyDetails = ({ user }) => {
                 </div>
               </div>
 
-              {isSubscribed ? (
+              {isProPlan ? (
                 <>
                   <a href={`tel:${property.dealerPhone || "+919812345678"}`} className="btn-primary" style={{ width: "100%", justifyContent: "center", marginBottom: "0.75rem" }}>
                     <FaPhoneAlt /> Call Dealer ({property.dealerPhone || "+91 98123 45678"})
@@ -235,7 +286,7 @@ const PropertyDetails = ({ user }) => {
                     textAlign: "center",
                     fontWeight: "600"
                   }}>
-                    <FaLock style={{ marginRight: "4px" }} /> Dealer Phone & Email details locked. Subscription required.
+                    <FaLock style={{ marginRight: "4px" }} /> Dealer Phone & Email details locked for Basic Plan.
                   </div>
                   <button 
                     onClick={handleContactClick} 
@@ -314,12 +365,11 @@ const PropertyDetails = ({ user }) => {
             </div>
 
             <h2 style={{ fontSize: "1.5rem", fontWeight: "800", marginBottom: "0.75rem" }}>
-              Subscription Required
+              Upgrade to Professional Plan
             </h2>
 
             <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", lineHeight: "1.6", marginBottom: "1.5rem" }}>
-              Ager tuhasnu ya dealer nu property details dekhani hai, ta pehla subscription plan laine pane. 
-              Unlock direct dealer phone numbers, emails, and list your own properties.
+              User Basic Plan allows viewing property listings & posting requirements. To unlock Society Name, Flat No., Other Details, Description, and direct Dealer Phone & Email, please upgrade to <strong>User Professional Plan (₹499)</strong>.
             </p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
@@ -331,7 +381,7 @@ const PropertyDetails = ({ user }) => {
                 className="btn-primary" 
                 style={{ width: "100%", justifyContent: "center", padding: "0.85rem", fontSize: "1rem" }}
               >
-                <FaCrown /> Buy Subscription Plan Now
+                <FaCrown /> Upgrade to User Professional Plan
               </button>
               <button 
                 onClick={() => setShowSubscriptionModal(false)}

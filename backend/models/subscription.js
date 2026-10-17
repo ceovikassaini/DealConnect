@@ -3,9 +3,13 @@ module.exports = function(sequelize, DataTypes) {
   return sequelize.define('subscription', {
     id: {
       autoIncrement: true,
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT,
       allowNull: false,
       primaryKey: true
+    },
+    type: {
+      type: DataTypes.ENUM('user','dealer'),
+      allowNull: true
     },
     name: {
       type: DataTypes.STRING(255),

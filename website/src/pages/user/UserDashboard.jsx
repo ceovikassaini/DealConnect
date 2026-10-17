@@ -518,7 +518,18 @@ const UserDashboard = ({ user, setUser }) => {
             <p style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>Manage your posted property requirements & profile settings</p>
           </div>
           
-          <button onClick={() => { setErrorMsg(""); setMsg(""); setModalErrorMsg(""); setShowAddReqModal(true); }} className="btn-primary" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <button 
+            onClick={() => { 
+              const isSubscribed = user?.isSubscribed === true || user?.subscriptionStatus === "active" || (user?.subscriptionPlan && user?.subscriptionPlan !== "Free" && user?.subscriptionPlan !== "None");
+              if (!isSubscribed) {
+                navigate("/pricing?msg=subscription_required");
+              } else {
+                setErrorMsg(""); setMsg(""); setModalErrorMsg(""); setShowAddReqModal(true); 
+              }
+            }} 
+            className="btn-primary" 
+            style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+          >
             <FaPlus /> Post Requirement
           </button>
         </div>

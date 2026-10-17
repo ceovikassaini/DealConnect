@@ -24,11 +24,84 @@
 
 [data-theme="dark"] {
   --bg-main: #0b0f19;
-  --bg-card: #1e293b;
+  --bg-card: #151d2a;
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
-  --border-color: #334155;
-  --primary-light: rgba(79, 70, 229, 0.15);
+  --border-color: #273549;
+  --primary-light: rgba(79, 70, 229, 0.2);
+
+  /* ParkEz Theme Overrides */
+  --bg-base: #0b0f19 !important;
+  --bg-elevated: #151d2a !important;
+  --bg-surface: #151d2a !important;
+  --bg-surface-2: #1e293b !important;
+  --bg-surface-3: #334155 !important;
+  --border: #273549 !important;
+  --border-soft: rgba(255, 255, 255, 0.08) !important;
+  --text: #f8fafc !important;
+  --text-muted: #94a3b8 !important;
+  --text-dim: rgba(255, 255, 255, 0.5) !important;
+  --grad-sidebar: #151d2a !important;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme="dark"] html,
+[data-theme="dark"] body,
+[data-theme="dark"] #root {
+  background-color: var(--bg-main) !important;
+  color: var(--text-main) !important;
+}
+
+[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]), 
+[data-theme="dark"] textarea, 
+[data-theme="dark"] select {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: #64748b !important;
+}
+
+[data-theme="dark"] option {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+[data-theme="dark"] aside,
+[data-theme="dark"] .parkez-navbar,
+[data-theme="dark"] .parkez-sidebar,
+[data-theme="dark"] .parkez-layout__sidebar-wrap {
+  background: #151d2a !important;
+  border-color: #273549 !important;
+}
+
+/* Nav Link Styling */
+.nav-link {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  text-decoration: none;
+  white-space: nowrap !important;
+}
+
+.nav-link:hover {
+  color: var(--primary);
+  background-color: var(--primary-light);
+}
+
+.nav-link.active {
+  color: var(--primary);
+  background-color: var(--primary-light);
+  font-weight: 700;
 }
 
 * {
