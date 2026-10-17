@@ -140,6 +140,23 @@ module.exports = {
       const userJson = user.toJSON();
       delete userJson.password;
 
+      // Check if user has an active subscription in subscription_buy table
+      const { subscription_buy } = require('../../models');
+      let activeSub = null;
+      if (subscription_buy) {
+        try {
+          activeSub = await subscription_buy.findOne({
+            where: {
+              user_id: user.id,
+              status: "Active"
+            },
+            order: [['id', 'DESC']]
+          });
+        } catch (e) {
+          console.warn("Could not check subscription_buy:", e.message);
+        }
+      }
+
       return helper.success(res, "Login successful", {
         ...userJson,
         role: activeRole,
@@ -147,7 +164,11 @@ module.exports = {
         avatar: userJson.image || (activeRole === 'dealer'
           ? 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80'
           : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80'),
-        token
+        token,
+        isSubscribed: Boolean(activeSub),
+        subscriptionPlan: activeSub ? activeSub.plan_name : null,
+        subscriptionId: activeSub ? activeSub.subscription_id : null,
+        subscriptionStatus: activeSub ? activeSub.status : "inactive"
       });
 
     } catch (err) {
@@ -963,13 +984,44 @@ module.exports = {
       const { user_id, subscription_id, plan_name, price, payment_method, transaction_id } = req.body;
       const { subscription_buy } = require('../../models');
 
+      const parsedUserId = user_id ? parseInt(user_id) : 0;
+      const parsedSubId = subscription_id ? parseInt(subscription_id) : 0;
+
+      // Check if user currently has active Professional plan
+      if (parsedUserId > 0) {
+        try {
+          const currentActive = await subscription_buy.findOne({
+            where: { user_id: parsedUserId, status: "Active" },
+            order: [['id', 'DESC']]
+          });
+
+          if (currentActive) {
+            const currentPlanLower = (currentActive.plan_name || "").toLowerCase();
+            const isCurrentPro = currentPlanLower.includes("professional") || currentPlanLower.includes("pro");
+            const isTargetBasic = (plan_name || "").toLowerCase().includes("basic") || (plan_name || "").toLowerCase().includes("free");
+
+            if (isCurrentPro && isTargetBasic) {
+              return helper.failed(res, "You cannot downgrade to Basic plan while Professional subscription is active.");
+            }
+          }
+
+          // Deactivate previous active subscription
+          await subscription_buy.update(
+            { status: "Inactive" },
+            { where: { user_id: parsedUserId, status: "Active" } }
+          );
+        } catch (updateErr) {
+          console.warn("Notice: could not update previous active subscriptions:", updateErr.message);
+        }
+      }
+
       const startDate = new Date();
       const endDate = new Date();
       endDate.setDate(startDate.getDate() + 30); // 30 days valid plan
 
       const newRecord = await subscription_buy.create({
-        user_id: user_id ? parseInt(user_id) : 0,
-        subscription_id: subscription_id ? parseInt(subscription_id) : 0,
+        user_id: parsedUserId,
+        subscription_id: parsedSubId,
         plan_name: plan_name || "Basic Plan",
         price: price ? String(price) : "0",
         payment_method: payment_method || "Online",
@@ -982,10 +1034,40 @@ module.exports = {
       console.log("✅ Subscription purchase record saved to 'subscription_buy' table with ID:", newRecord.id);
 
       return helper.success(res, "Subscription plan activated and recorded in database", {
-        subscription: newRecord
+        subscription: newRecord,
+        isSubscribed: true,
+        subscriptionPlan: newRecord.plan_name,
+        subscriptionId: newRecord.subscription_id
       });
     } catch (error) {
       console.error("❌ Error saving to subscription_buy table:", error);
+      return helper.error(res, error);
+    }
+  },
+
+  getUserSubscription: async (req, res) => {
+    try {
+      const userId = req.query.user_id || req.params.user_id;
+      const { subscription_buy } = require('../../models');
+
+      if (!userId) {
+        return helper.failed(res, "user_id is required");
+      }
+
+      const activeSub = await subscription_buy.findOne({
+        where: {
+          user_id: parseInt(userId),
+          status: "Active"
+        },
+        order: [['id', 'DESC']]
+      });
+
+      return helper.success(res, "User active subscription", {
+        hasSubscription: Boolean(activeSub),
+        subscription: activeSub
+      });
+    } catch (error) {
+      console.error("❌ Error fetching user subscription:", error);
       return helper.error(res, error);
     }
   },

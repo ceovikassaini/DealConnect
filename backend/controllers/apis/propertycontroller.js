@@ -350,5 +350,153 @@ module.exports = {
         message: err.message || "Failed to upload image files"
       });
     }
+  },
+
+  getStats: async (req, res) => {
+    try {
+      const { userId, dealerId, role } = req.query;
+      const targetUserId = parseInt(userId || dealerId || 0);
+
+      // 1. Overall counts (for HomePage & Main Website)
+      const propertiesCount = db.property ? await db.property.count() : 0;
+      const requirementsCount = db.requirements ? await db.requirements.count() : 0;
+      const dealersCount = db.users ? await db.users.count({
+        where: {
+          [Op.or]: [{ role: 2 }, { role: "2" }, { role: "dealer" }]
+        }
+      }) : 0;
+      const usersCount = db.users ? await db.users.count({
+        where: {
+          [Op.or]: [{ role: 1 }, { role: "1" }, { role: "user" }]
+        }
+      }) : 0;
+      const dealsCount = db.deal_connect ? await db.deal_connect.count() : 0;
+
+      // Today's counts
+      const startOfToday = new Date();
+      startOfToday.setHours(0, 0, 0, 0);
+
+      const todayProperties = db.property ? await db.property.count({
+        where: { createdAt: { [Op.gte]: startOfToday } }
+      }) : 0;
+
+      const todayRequirements = db.requirements ? await db.requirements.count({
+        where: { createdAt: { [Op.gte]: startOfToday } }
+      }) : 0;
+
+      const todayDeals = db.deal_connect ? await db.deal_connect.count({
+        where: { createdAt: { [Op.gte]: startOfToday } }
+      }) : 0;
+
+      // 2. User/Dealer specific counts (for Dashboards)
+      let myListings = 0;
+      let myRequirements = 0;
+      let myDeals = 0;
+      let matchingLeads = 0;
+      let recentProperties = [];
+      let recentRequirements = [];
+
+      if (targetUserId > 0) {
+        // Dealer/User listings
+        if (db.property) {
+          myListings = await db.property.count({
+            where: {
+              [Op.or]: [
+                { user_id: targetUserId },
+                { dealer_id: targetUserId }
+              ]
+            }
+          });
+          recentProperties = await db.property.findAll({
+            where: {
+              [Op.or]: [
+                { user_id: targetUserId },
+                { dealer_id: targetUserId }
+              ]
+            },
+            limit: 5,
+            order: [['id', 'DESC']]
+          });
+        }
+
+        // Dealer/User requirements
+        if (db.requirements) {
+          myRequirements = await db.requirements.count({
+            where: {
+              [Op.or]: [
+                { user_id: targetUserId },
+                { dealer_id: targetUserId }
+              ]
+            }
+          });
+          recentRequirements = await db.requirements.findAll({
+            where: {
+              [Op.or]: [
+                { user_id: targetUserId },
+                { dealer_id: targetUserId }
+              ]
+            },
+            limit: 5,
+            order: [['id', 'DESC']]
+          });
+        }
+
+        // Dealer deals
+        if (db.deal_connect) {
+          myDeals = await db.deal_connect.count({
+            where: {
+              [Op.or]: [
+                { user_id: targetUserId },
+                { dealer_id: targetUserId }
+              ]
+            }
+          });
+        }
+
+        matchingLeads = requirementsCount;
+      }
+
+      // If user has no specific recent properties, fetch latest overall properties
+      if (recentProperties.length === 0 && db.property) {
+        recentProperties = await db.property.findAll({
+          limit: 3,
+          order: [['id', 'DESC']]
+        });
+      }
+
+      // If user has no specific recent requirements, fetch latest overall requirements
+      if (recentRequirements.length === 0 && db.requirements) {
+        recentRequirements = await db.requirements.findAll({
+          limit: 3,
+          order: [['id', 'DESC']]
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        code: 200,
+        message: "Stats retrieved successfully",
+        body: {
+          propertiesListed: propertiesCount,
+          requirementsPosted: requirementsCount,
+          activeDealers: dealersCount,
+          totalUsers: usersCount,
+          dealsClosed: dealsCount,
+          todayPropertiesAdded: todayProperties,
+          todayNewRequirements: todayRequirements,
+          todayDealsClosed: todayDeals,
+
+          myListings,
+          myRequirements,
+          myDeals,
+          matchingLeads,
+          recentProperties,
+          recentRequirements
+        }
+      });
+    } catch (err) {
+      console.error("Error fetching stats:", err);
+      return res.status(500).json({ success: false, message: err.message });
+    }
   }
 };

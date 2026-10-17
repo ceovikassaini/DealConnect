@@ -26,6 +26,8 @@ module.exports = (io) => {
   router.post('/change_password', authController.change_password);
   router.post('/buy_subscription', authController.buySubscription);
   router.post('/subscriptions/buy', authController.buySubscription);
+  router.get('/user_subscription', authController.getUserSubscription);
+  router.get('/user_subscription/:user_id', authController.getUserSubscription);
   router.get('/subscriptions', authController.getSubscriptions);
   router.get('/get_subscriptions', authController.getSubscriptions);
 

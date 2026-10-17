@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaCheckCircle, FaCrown, FaCheck, FaUserTie, FaUser, FaSpinner } from "react-icons/fa";
+import { FaCheckCircle, FaCrown, FaCheck, FaUserTie, FaUser, FaSpinner, FaClock, FaCalendarAlt } from "react-icons/fa";
 
 const fallbackPlans = [
   { id: 1, type: "dealer", name: "Free Dealer / Basic", price: "99", description: "Browse & Search Properties\nView Public Listings" },
@@ -14,6 +14,7 @@ const Pricing = ({ user, setUser }) => {
   const [successMsg, setSuccessMsg] = useState("");
   const [plans, setPlans] = useState([]);
   const [loadingPlans, setLoadingPlans] = useState(true);
+  const [activeSubData, setActiveSubData] = useState(null);
 
   // Determine user role if logged in
   const userRole = user?.role === "dealer" || user?.role === 2 || user?.role === "2" ? "dealer" : (user?.role === "user" ? "user" : null);
@@ -43,8 +44,91 @@ const Pricing = ({ user, setUser }) => {
       });
   }, []);
 
+  // Sync active subscription from DB on load if user is logged in
+  useEffect(() => {
+    if (user?.id) {
+      const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api";
+      fetch(`${API_BASE}/user_subscription?user_id=${user.id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.body?.hasSubscription && data.body?.subscription) {
+            const sub = data.body.subscription;
+            setActiveSubData(sub);
+            const updatedUser = {
+              ...user,
+              isSubscribed: true,
+              subscriptionPlan: sub.plan_name,
+              subscriptionId: sub.subscription_id,
+              subscribedAt: sub.start_date,
+              subscriptionEndDate: sub.end_date
+            };
+            if (!user.isSubscribed || user.subscriptionPlan !== sub.plan_name || user.subscriptionId !== sub.subscription_id) {
+              if (setUser) setUser(updatedUser);
+              localStorage.setItem("dealconnect_user", JSON.stringify(updatedUser));
+              localStorage.setItem("user", JSON.stringify(updatedUser));
+            }
+          } else if (data.success && !data.body?.hasSubscription) {
+            setActiveSubData(null);
+            if (user.isSubscribed) {
+              const updatedUser = {
+                ...user,
+                isSubscribed: false,
+                subscriptionPlan: null,
+                subscriptionId: null,
+                subscriptionEndDate: null
+              };
+              if (setUser) setUser(updatedUser);
+              localStorage.setItem("dealconnect_user", JSON.stringify(updatedUser));
+              localStorage.setItem("user", JSON.stringify(updatedUser));
+            }
+          }
+        })
+        .catch(err => console.warn("Could not check user subscription from DB:", err));
+    }
+  }, [user?.id]);
+
   const activeType = userRole || activeRoleTab;
   const currentPlans = (plans.length > 0 ? plans : fallbackPlans).filter(p => p.type === activeType);
+
+  const getRemainingDays = () => {
+    const endDateStr = activeSubData?.end_date || user?.subscriptionEndDate;
+    if (endDateStr) {
+      const end = new Date(endDateStr);
+      const now = new Date();
+      const diffTime = end.getTime() - now.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays > 0 ? diffDays : 0;
+    }
+    if (user?.subscribedAt) {
+      const start = new Date(user.subscribedAt);
+      const end = new Date(start.getTime() + 30 * 24 * 60 * 60 * 1000);
+      const now = new Date();
+      const diffTime = end.getTime() - now.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays > 0 ? diffDays : 0;
+    }
+    return 30;
+  };
+
+  const getFormattedEndDate = () => {
+    const endDateStr = activeSubData?.end_date || user?.subscriptionEndDate;
+    let targetDate = null;
+    if (endDateStr) {
+      targetDate = new Date(endDateStr);
+    } else if (user?.subscribedAt) {
+      const start = new Date(user.subscribedAt);
+      targetDate = new Date(start.getTime() + 30 * 24 * 60 * 60 * 1000);
+    }
+    if (!targetDate || isNaN(targetDate.getTime())) return null;
+    return targetDate.toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    });
+  };
+
+  const daysRemaining = getRemainingDays();
+  const formattedEndDate = getFormattedEndDate();
 
   const handleSubscribe = async (plan) => {
     if (!user) {
@@ -61,24 +145,44 @@ const Pricing = ({ user, setUser }) => {
       return;
     }
 
+    const isUserOnPro = user?.isSubscribed && (planName.includes("professional") || planName.includes("pro"));
+    const isTargetBasic = plan.name.toLowerCase().includes("basic") || plan.name.toLowerCase().includes("free");
+
+    // Prevent downgrade from Professional to Basic
+    if (isUserOnPro && isTargetBasic) {
+      alert("⚠️ You have an active Professional plan. Downgrade to Basic plan is not allowed!");
+      setSuccessMsg("⚠️ Downgrade to Basic is not allowed while Professional plan is active.");
+      return;
+    }
+
     const fullPlanName = `${plan.name} (${plan.type === 'dealer' ? 'Dealer' : 'User'})`;
+    const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api";
+    const txnId = `DC_SUB_${Date.now()}`;
+    let newSub = null;
 
     // 1. Save to backend database subscription_buy table
     try {
-      await fetch("http://localhost:5000/api/buy_subscription", {
+      const response = await fetch(`${API_BASE}/buy_subscription`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           user_id: user.id || 1,
           subscription_id: plan.id,
-          plan_name: plan.name,
+          plan_name: fullPlanName,
           role: plan.type,
           price: String(plan.price),
           payment_method: "Online",
-          transaction_id: `TXN_${Date.now()}`
+          transaction_id: txnId
         })
       });
-      console.log("✅ Subscription saved to subscription_buy database table!");
+      const resData = await response.json();
+      if (!resData.success) {
+        alert(resData.message || resData.msg || "Failed to process subscription.");
+        return;
+      }
+      newSub = resData.body?.subscription;
+      if (newSub) setActiveSubData(newSub);
+      console.log("✅ Subscription saved to subscription_buy database table:", resData);
     } catch (err) {
       console.error("Error calling buy_subscription API:", err);
     }
@@ -89,14 +193,16 @@ const Pricing = ({ user, setUser }) => {
       isSubscribed: true,
       subscriptionPlan: fullPlanName,
       subscriptionId: plan.id,
-      subscribedAt: new Date().toISOString()
+      subscribedAt: newSub?.start_date || new Date().toISOString(),
+      subscriptionEndDate: newSub?.end_date || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
     };
 
     if (setUser) {
       setUser(updatedUser);
     }
     localStorage.setItem("dealconnect_user", JSON.stringify(updatedUser));
-    setSuccessMsg(`🎉 Success! Your ${plan.name} (₹${plan.price}) subscription plan is activated and saved in database!`);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+    setSuccessMsg(`🎉 Success! Your ${plan.name} (₹${plan.price}) subscription has been activated and saved to database ('subscription_buy' table)! Txn ID: ${txnId}`);
   };
 
   return (
@@ -111,17 +217,36 @@ const Pricing = ({ user, setUser }) => {
             color: "#15803d",
             padding: "1rem 1.5rem",
             borderRadius: "16px",
-            maxWidth: "780px",
+            maxWidth: "820px",
             margin: "0 auto 2.5rem auto",
             fontWeight: "700",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: "0.6rem",
+            gap: "0.8rem",
+            flexWrap: "wrap",
             boxShadow: "0 4px 15px rgba(21, 128, 61, 0.08)"
           }}>
             <FaCrown size={22} color="#d97706" />
-            <span>Active Subscription: <strong>{user.subscriptionPlan || "Professional Plan"}</strong> — All Features Unlocked!</span>
+            <span>Active Plan: <strong>{user.subscriptionPlan || "Professional Plan"}</strong></span>
+            <span style={{
+              backgroundColor: "#15803d",
+              color: "#ffffff",
+              padding: "0.22rem 0.75rem",
+              borderRadius: "20px",
+              fontSize: "0.82rem",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.35rem",
+              fontWeight: "800"
+            }}>
+              <FaClock size={12} /> {daysRemaining} Days Pending
+            </span>
+            {formattedEndDate && (
+              <span style={{ fontSize: "0.85rem", color: "#166534" }}>
+                (Valid until: <strong>{formattedEndDate}</strong>)
+              </span>
+            )}
           </div>
         )}
 
@@ -249,12 +374,43 @@ const Pricing = ({ user, setUser }) => {
             margin: "0 auto"
           }}>
             {currentPlans.map((plan, index) => {
-              const isActivePlan = user?.isSubscribed && (user?.subscriptionId === plan.id || user?.subscriptionPlan?.toLowerCase().includes(plan.name.toLowerCase()));
-              const isPro = plan.name.toLowerCase().includes("professional") || plan.name.toLowerCase().includes("pro");
+              const userPlanLower = (user?.subscriptionPlan || "").toLowerCase();
+              const isUserSubscribed = Boolean(user?.isSubscribed);
+              const isUserOnPro = isUserSubscribed && (userPlanLower.includes("professional") || userPlanLower.includes("pro"));
+              const isUserOnBasic = isUserSubscribed && (userPlanLower.includes("basic") || userPlanLower.includes("free"));
+
+              const isPlanPro = plan.name.toLowerCase().includes("professional") || plan.name.toLowerCase().includes("pro");
+              const isPlanBasic = plan.name.toLowerCase().includes("basic") || plan.name.toLowerCase().includes("free");
+
+              const isActivePlan = isUserSubscribed && (
+                user?.subscriptionId === plan.id ||
+                (isUserOnPro && isPlanPro) ||
+                (isUserOnBasic && isPlanBasic) ||
+                userPlanLower.includes(plan.name.toLowerCase())
+              );
+
+              const isDowngradeDisabled = isUserOnPro && isPlanBasic;
+              const isUpgradeAvailable = isUserOnBasic && isPlanPro;
 
               const descriptions = plan.description 
                 ? plan.description.split(/\n|,/).map(s => s.trim()).filter(Boolean)
                 : ["Portal Access", "Listing Features"];
+
+              // Determine card border & shadow
+              let cardBorder = "1px solid var(--border-color)";
+              let cardShadow = "none";
+              let cardOpacity = 1;
+
+              if (isActivePlan) {
+                cardBorder = "2.5px solid #10b981";
+                cardShadow = "0 8px 25px rgba(16, 185, 129, 0.22)";
+              } else if (isDowngradeDisabled) {
+                cardBorder = "1px dashed var(--border-color)";
+                cardOpacity = 0.65;
+              } else if (isPlanPro || isUpgradeAvailable) {
+                cardBorder = "2.5px solid #4f46e5";
+                cardShadow = "0 8px 25px rgba(79, 70, 229, 0.2)";
+              }
 
               return (
                 <div 
@@ -265,13 +421,76 @@ const Pricing = ({ user, setUser }) => {
                     display: "flex", 
                     flexDirection: "column", 
                     justifyContent: "space-between",
-                    border: isPro ? "2px solid #4f46e5" : "1px solid var(--border-color)",
+                    border: cardBorder,
+                    boxShadow: cardShadow,
+                    opacity: cardOpacity,
                     position: "relative",
                     overflow: "visible",
-                    marginTop: isPro ? "14px" : "0"
+                    marginTop: (isActivePlan || isPlanPro) ? "14px" : "0",
+                    transition: "all 0.3s ease"
                   }}
                 >
-                  {isPro && (
+                  {/* Badge on top */}
+                  {isActivePlan ? (
+                    <div style={{ 
+                      position: "absolute", 
+                      top: "-15px", 
+                      left: "50%", 
+                      transform: "translateX(-50%)", 
+                      backgroundColor: "#10b981", 
+                      color: "#ffffff", 
+                      padding: "0.38rem 1.3rem", 
+                      borderRadius: "20px", 
+                      fontSize: "0.78rem", 
+                      fontWeight: "800", 
+                      letterSpacing: "0.5px",
+                      boxShadow: "0 4px 14px rgba(16, 185, 129, 0.4)",
+                      whiteSpace: "nowrap",
+                      zIndex: 10,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.4rem"
+                    }}>
+                      <FaCheck /> SELECTED / CURRENT PLAN
+                    </div>
+                  ) : isDowngradeDisabled ? (
+                    <div style={{ 
+                      position: "absolute", 
+                      top: "-15px", 
+                      left: "50%", 
+                      transform: "translateX(-50%)", 
+                      backgroundColor: "#64748b", 
+                      color: "#ffffff", 
+                      padding: "0.32rem 1.1rem", 
+                      borderRadius: "20px", 
+                      fontSize: "0.74rem", 
+                      fontWeight: "800", 
+                      letterSpacing: "0.5px",
+                      whiteSpace: "nowrap",
+                      zIndex: 10
+                    }}>
+                      DOWNGRADE NOT ALLOWED
+                    </div>
+                  ) : isUpgradeAvailable ? (
+                    <div style={{ 
+                      position: "absolute", 
+                      top: "-15px", 
+                      left: "50%", 
+                      transform: "translateX(-50%)", 
+                      backgroundColor: "#4f46e5", 
+                      color: "#ffffff", 
+                      padding: "0.38rem 1.3rem", 
+                      borderRadius: "20px", 
+                      fontSize: "0.78rem", 
+                      fontWeight: "800", 
+                      letterSpacing: "0.5px",
+                      boxShadow: "0 4px 14px rgba(79, 70, 229, 0.4)",
+                      whiteSpace: "nowrap",
+                      zIndex: 10
+                    }}>
+                      ⚡ UPGRADE AVAILABLE
+                    </div>
+                  ) : isPlanPro ? (
                     <div style={{ 
                       position: "absolute", 
                       top: "-15px", 
@@ -291,7 +510,7 @@ const Pricing = ({ user, setUser }) => {
                     }}>
                       RECOMMENDED
                     </div>
-                  )}
+                  ) : null}
 
                   <div>
                     <h3 style={{ fontSize: "1.35rem", fontWeight: "800", marginBottom: "0.4rem" }}>
@@ -301,7 +520,7 @@ const Pricing = ({ user, setUser }) => {
                       {plan.type === "dealer" ? "Dealer Subscription Tier" : "Buyer / User Subscription Tier"}
                     </p>
                     
-                    <div style={{ fontSize: "2.75rem", fontWeight: "800", margin: "1.25rem 0", color: isPro ? "#4f46e5" : "var(--text-main)" }}>
+                    <div style={{ fontSize: "2.75rem", fontWeight: "800", margin: "1.25rem 0", color: (isActivePlan ? "#10b981" : (isPlanPro ? "#4f46e5" : "var(--text-main)")) }}>
                       ₹{plan.price}
                       <span style={{ fontSize: "1rem", color: "var(--text-muted)", fontWeight: "600" }}>/mo</span>
                     </div>
@@ -309,38 +528,94 @@ const Pricing = ({ user, setUser }) => {
                     <ul style={featureListStyle}>
                       {descriptions.map((desc, idx) => (
                         <li key={idx} style={{ textTransform: "capitalize" }}>
-                          <FaCheckCircle color="#10b981" /> {desc}
+                          <FaCheckCircle color={isActivePlan ? "#10b981" : "#10b981"} /> {desc}
                         </li>
                       ))}
                     </ul>
                   </div>
 
                   {!user ? (
-                    <Link to="/login?msg=login_required" className={isPro ? "btn-primary" : "btn-outline"} style={{ justifyContent: "center", width: "100%", marginTop: "2rem", padding: "0.8rem" }}>
+                    <Link to="/login?msg=login_required" className={isPlanPro ? "btn-primary" : "btn-outline"} style={{ justifyContent: "center", width: "100%", marginTop: "2rem", padding: "0.8rem" }}>
                       Login to Subscribe (₹{plan.price})
                     </Link>
                   ) : (
                     <button 
                       onClick={() => handleSubscribe(plan)}
-                      disabled={isActivePlan}
-                      className={isActivePlan ? "btn-outline" : (isPro ? "btn-primary" : "btn-outline")}
+                      disabled={isActivePlan || isDowngradeDisabled}
+                      className={isActivePlan ? "btn-outline" : (isDowngradeDisabled ? "btn-outline" : "btn-primary")}
                       style={{ 
                         justifyContent: "center", 
                         width: "100%", 
                         marginTop: "2rem", 
-                        cursor: isActivePlan ? "not-allowed" : "pointer", 
+                        cursor: (isActivePlan || isDowngradeDisabled) ? "not-allowed" : "pointer", 
                         padding: "0.8rem", 
                         fontSize: "0.95rem",
-                        opacity: isActivePlan ? 0.85 : 1,
-                        ...(isActivePlan ? { borderColor: "#10b981", color: "#10b981", backgroundColor: "rgba(16, 185, 129, 0.12)" } : {})
+                        fontWeight: "700",
+                        ...(isActivePlan ? { 
+                          borderColor: "#10b981", 
+                          color: "#10b981", 
+                          backgroundColor: "rgba(16, 185, 129, 0.12)",
+                          boxShadow: "0 2px 8px rgba(16, 185, 129, 0.2)"
+                        } : isDowngradeDisabled ? {
+                          borderColor: "var(--border-color)",
+                          color: "var(--text-muted)",
+                          backgroundColor: "rgba(148, 163, 184, 0.12)"
+                        } : {
+                          boxShadow: "0 4px 14px rgba(79, 70, 229, 0.35)"
+                        })
                       }}
                     >
                       {isActivePlan ? (
-                        <> <FaCheck /> Current Active Plan (₹{plan.price}) </>
+                        <> <FaCheck /> Selected (Active Plan) </>
+                      ) : isDowngradeDisabled ? (
+                        `🚫 Cannot Downgrade to Basic`
+                      ) : isUpgradeAvailable ? (
+                        `🚀 Upgrade to Professional (₹${plan.price})`
                       ) : (
                         `Subscribe ${plan.name} (₹${plan.price})`
                       )}
                     </button>
+                  )}
+
+                  {/* Days Pending & Expiry Date for Selected Active Plan */}
+                  {isActivePlan && (
+                    <div style={{
+                      marginTop: "0.85rem",
+                      padding: "0.65rem 0.9rem",
+                      backgroundColor: "rgba(16, 185, 129, 0.12)",
+                      border: "1px solid rgba(16, 185, 129, 0.35)",
+                      borderRadius: "12px",
+                      textAlign: "center",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.3rem",
+                      alignItems: "center",
+                      justifyContent: "center"
+                    }}>
+                      <div style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.4rem",
+                        fontWeight: "800",
+                        fontSize: "0.9rem",
+                        color: "#10b981"
+                      }}>
+                        <FaClock size={13} />
+                        <span>{daysRemaining} Days Pending / Remaining</span>
+                      </div>
+                      {formattedEndDate && (
+                        <div style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.35rem",
+                          fontSize: "0.78rem",
+                          color: "var(--text-muted)"
+                        }}>
+                          <FaCalendarAlt size={11} />
+                          <span>Valid Until: <strong style={{ color: "var(--text-main)" }}>{formattedEndDate}</strong></span>
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
               );
