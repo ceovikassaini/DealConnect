@@ -1119,9 +1119,9 @@ module.exports = {
           mobile_no: d.mobile_no,
           company: `${d.name || "Dealer"} Real Estate`,
           location: d.address || "Sonipat, Haryana",
-          experience: "5+ Yrs",
-          avatar: d.image || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80',
-          activeListings,
+          avatar: (d.image && !d.image.startsWith('/images/admin') && d.image.trim() !== '')
+            ? (d.image.startsWith('http') || d.image.startsWith('/') ? d.image : `/uploads/${d.image}`)
+            : '/default-avatar.svg',
           dealsClosed,
           rating: "4.9"
         };
