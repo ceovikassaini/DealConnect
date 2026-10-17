@@ -13,16 +13,38 @@ const HomePage = ({ user }) => {
   const [locationInput, setLocationInput] = useState("");
   const [typeInput, setTypeInput] = useState("All Types");
   const [stats, setStats] = useState({
-    activeDealers: "2,450+",
-    propertiesListed: "12,850+",
-    dealsClosed: "3,240+",
-    requirementsPosted: "5,630+",
-    todayNewRequirements: 128,
-    todayPropertiesAdded: 243,
-    todayDealsClosed: 67
+    activeDealers: "Loading...",
+    propertiesListed: "Loading...",
+    dealsClosed: "Loading...",
+    requirementsPosted: "Loading...",
+    todayNewRequirements: 0,
+    todayPropertiesAdded: 0,
+    todayDealsClosed: 0
   });
 
   const [featuredProperties, setFeaturedProperties] = useState([]);
+
+  // Fetch dynamic database counts
+  useEffect(() => {
+    const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api";
+    fetch(`${API_BASE}/stats`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.body) {
+          const b = data.body;
+          setStats({
+            activeDealers: `${b.activeDealers} Verified`,
+            propertiesListed: `${b.propertiesListed} Listed`,
+            dealsClosed: `${b.dealsClosed} Closed`,
+            requirementsPosted: `${b.requirementsPosted} Posted`,
+            todayNewRequirements: b.todayNewRequirements || 0,
+            todayPropertiesAdded: b.todayPropertiesAdded || 0,
+            todayDealsClosed: b.todayDealsClosed || 0
+          });
+        }
+      })
+      .catch(err => console.warn("Could not fetch dynamic stats:", err));
+  }, []);
 
   // Animated Hero Image Slider
   const heroImages = [
@@ -109,7 +131,8 @@ const HomePage = ({ user }) => {
   };
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/properties")
+    const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api";
+    fetch(`${API_BASE}/properties`)
       .then(res => res.json())
       .then(data => {
         if (data.success && data.properties) {
@@ -443,10 +466,10 @@ const HomePage = ({ user }) => {
             gap: "1.5rem",
             marginTop: "3rem"
           }}>
-            <StatCard icon={<FaUserTie size={24} color="#4f46e5" />} count={stats.activeDealers} label="Active Dealers" change="+12% this month" bg="#eef2ff" />
-            <StatCard icon={<FaBuilding size={24} color="#10b981" />} count={stats.propertiesListed} label="Properties Listed" change="+18% this month" bg="#ecfdf5" />
-            <StatCard icon={<FaHandshake size={24} color="#f59e0b" />} count={stats.dealsClosed} label="Deals Closed" change="+25% this month" bg="#fef3c7" />
-            <StatCard icon={<FaChartLine size={24} color="#3b82f6" />} count={stats.requirementsPosted} label="Requirements Posted" change="+15% this month" bg="#eff6ff" />
+            <StatCard icon={<FaUserTie size={24} color="#4f46e5" />} count={stats.activeDealers} label="Active Dealers" change="Live in Database" bg="#eef2ff" />
+            <StatCard icon={<FaBuilding size={24} color="#10b981" />} count={stats.propertiesListed} label="Properties Listed" change="Live in Database" bg="#ecfdf5" />
+            <StatCard icon={<FaHandshake size={24} color="#f59e0b" />} count={stats.dealsClosed} label="Deals Closed" change="Verified Deals" bg="#fef3c7" />
+            <StatCard icon={<FaChartLine size={24} color="#3b82f6" />} count={stats.requirementsPosted} label="Requirements Posted" change="Live in Database" bg="#eff6ff" />
           </div>
         </div>
       </section>

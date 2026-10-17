@@ -31,6 +31,12 @@ module.exports = (io) => {
   router.get('/subscriptions', authController.getSubscriptions);
   router.get('/get_subscriptions', authController.getSubscriptions);
 
+  // Stats & Counts (Dynamic for HomePage & Dashboards)
+  router.get('/stats', propertycontroller.getStats);
+  router.get('/dashboard_stats', propertycontroller.getStats);
+  router.get('/dealers', authController.getDealers);
+  router.get('/get_dealers', authController.getDealers);
+
   // Categories & Requirements
   router.get('/categories', requirementcontroller.getCategories);
   router.get('/subcategories', requirementcontroller.getSubCategories);

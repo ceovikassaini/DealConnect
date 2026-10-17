@@ -4,22 +4,34 @@ import { FaUserTie, FaCheckCircle, FaStar, FaPhoneAlt, FaEnvelope } from "react-
 
 const DealersListing = () => {
   const [dealers, setDealers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/dealers")
+    const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api";
+    fetch(`${API_BASE}/dealers`)
       .then(res => res.json())
       .then(data => {
-        if (data.success) setDealers(data.dealers);
+        setLoading(false);
+        const list = data.body?.dealers || data.dealers || data.body?.list || [];
+        if (data.success && list.length > 0) {
+          setDealers(list);
+        }
       })
-      .catch(() => {});
+      .catch(() => {
+        setLoading(false);
+      });
   }, []);
 
   return (
     <div style={{ backgroundColor: "var(--bg-main)", minHeight: "80vh", padding: "3rem 0" }}>
       <div className="container">
         <div style={{ marginBottom: "2rem" }}>
-          <h1 style={{ fontSize: "2.2rem", fontWeight: "800", marginBottom: "0.5rem" }}>Verified Property Dealers</h1>
-          <p style={{ color: "var(--text-muted)" }}>Connect with trusted real estate brokers and property agents</p>
+          <h1 style={{ fontSize: "2.2rem", fontWeight: "800", marginBottom: "0.5rem" }}>
+            Verified Property Dealers {dealers.length > 0 && <span style={{ fontSize: "1.4rem", color: "var(--primary)" }}>({dealers.length})</span>}
+          </h1>
+          <p style={{ color: "var(--text-muted)" }}>
+            Connect with {dealers.length > 0 ? dealers.length : "verified"} trusted real estate brokers and property agents live from database
+          </p>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.75rem" }}>

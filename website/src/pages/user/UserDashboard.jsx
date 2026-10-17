@@ -590,6 +590,55 @@ const UserDashboard = ({ user, setUser }) => {
           </div>
         </div>
 
+        {/* Dynamic Metric Cards Row */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1.25rem", marginBottom: "2rem" }}>
+          <div className="card" style={{ padding: "1.25rem", display: "flex", alignItems: "center", gap: "1rem", borderRadius: "14px" }}>
+            <div style={{ width: "46px", height: "46px", borderRadius: "12px", backgroundColor: "#eef2ff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.25rem", color: "#4f46e5" }}>
+              <FaLayerGroup />
+            </div>
+            <div>
+              <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", display: "block" }}>Posted Requirements</span>
+              <strong style={{ fontSize: "1.25rem", color: "var(--text-main)", fontWeight: "800" }}>{posts.length} Posts</strong>
+            </div>
+          </div>
+
+          <div className="card" style={{ padding: "1.25rem", display: "flex", alignItems: "center", gap: "1rem", borderRadius: "14px" }}>
+            <div style={{ width: "46px", height: "46px", borderRadius: "12px", backgroundColor: "#ecfdf5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.25rem", color: "#10b981" }}>
+              <FaCheckCircle />
+            </div>
+            <div>
+              <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", display: "block" }}>Active Posts</span>
+              <strong style={{ fontSize: "1.25rem", color: "var(--text-main)", fontWeight: "800" }}>
+                {posts.filter(p => p.status === "Active" || !p.status).length} Active
+              </strong>
+            </div>
+          </div>
+
+          <div className="card" style={{ padding: "1.25rem", display: "flex", alignItems: "center", gap: "1rem", borderRadius: "14px" }}>
+            <div style={{ width: "46px", height: "46px", borderRadius: "12px", backgroundColor: "#fef3c7", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.25rem", color: "#d97706" }}>
+              <FaTags />
+            </div>
+            <div>
+              <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", display: "block" }}>Requirement Types</span>
+              <strong style={{ fontSize: "1.25rem", color: "var(--text-main)", fontWeight: "800" }}>
+                {new Set(posts.map(p => p.reqType || "Buy")).size} Categories
+              </strong>
+            </div>
+          </div>
+
+          <div className="card" style={{ padding: "1.25rem", display: "flex", alignItems: "center", gap: "1rem", borderRadius: "14px" }}>
+            <div style={{ width: "46px", height: "46px", borderRadius: "12px", backgroundColor: "#eff6ff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.25rem", color: "#3b82f6" }}>
+              <FaExchangeAlt />
+            </div>
+            <div>
+              <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", display: "block" }}>Current Plan</span>
+              <strong style={{ fontSize: "1.05rem", color: "var(--text-main)", fontWeight: "800", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "140px", display: "block" }}>
+                {user?.subscriptionPlan ? user.subscriptionPlan.replace(/\(.*\)/, "").trim() : (user?.isSubscribed ? "Subscribed" : "Free Tier")}
+              </strong>
+            </div>
+          </div>
+        </div>
+
         {/* My Property Requirements / Posts Table (PURE DATABASE DATA ONLY) */}
         <div className="card" style={{ padding: "1.75rem" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>

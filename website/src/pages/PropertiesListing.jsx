@@ -28,7 +28,8 @@ const PropertiesListing = ({ user }) => {
 
   // Load properties from backend
   useEffect(() => {
-    fetch("http://localhost:5000/api/properties")
+    const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api";
+    fetch(`${API_BASE}/properties`)
       .then(res => res.json())
       .then(data => {
         if (data.success && data.properties) setProperties(data.properties);
@@ -38,7 +39,8 @@ const PropertiesListing = ({ user }) => {
 
   // Load Categories on mount
   useEffect(() => {
-    fetch("http://localhost:5000/api/categories")
+    const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api";
+    fetch(`${API_BASE}/categories`)
       .then(res => res.json())
       .then(data => {
         const catList = data.body || data.categories || data.data || [];
@@ -101,8 +103,10 @@ const PropertiesListing = ({ user }) => {
     <div style={{ backgroundColor: "var(--bg-main)", minHeight: "80vh", padding: "3rem 0" }}>
       <div className="container">
         <div style={{ marginBottom: "2rem" }}>
-          <h1 style={{ fontSize: "2.2rem", fontWeight: "800", marginBottom: "0.5rem" }}>Properties Listing</h1>
-          <p style={{ color: "var(--text-muted)" }}>Explore verified properties across top locations. Filter by Category & Subcategory to find exact matches.</p>
+          <h1 style={{ fontSize: "2.2rem", fontWeight: "800", marginBottom: "0.5rem" }}>
+            Properties Listing {filtered.length > 0 && <span style={{ fontSize: "1.4rem", color: "var(--primary)" }}>({filtered.length})</span>}
+          </h1>
+          <p style={{ color: "var(--text-muted)" }}>Explore {filtered.length} verified properties across top locations. Filter by Category & Subcategory to find exact matches.</p>
         </div>
 
         {/* Category & Subcategory Filter Bar */}

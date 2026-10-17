@@ -111,10 +111,10 @@ const RequirementsListing = ({ user }) => {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", flexWrap: "wrap", gap: "1rem" }}>
           <div>
             <h1 style={{ fontSize: "2.2rem", fontWeight: "800", marginBottom: "0.5rem" }}>
-              Property Requirements ({user?.name})
+              Property Requirements {filtered.length > 0 && <span style={{ fontSize: "1.4rem", color: "var(--primary)" }}>({filtered.length})</span>}
             </h1>
             <p style={{ color: "var(--text-muted)" }}>
-              Browse and manage buyer/tenant requirements on DealConnect
+              Browse and manage {filtered.length} buyer/tenant requirements live on DealConnect
             </p>
           </div>
 

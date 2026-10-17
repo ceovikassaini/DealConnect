@@ -1084,5 +1084,57 @@ module.exports = {
       console.error("❌ Error fetching subscriptions from DB:", error);
       return helper.error(res, error);
     }
+  },
+
+  getDealers: async (req, res) => {
+    try {
+      const { users, property, deal_connect } = require('../../models');
+      const dealerList = await users.findAll({
+        where: {
+          [Op.or]: [
+            { role: 2 },
+            { role: "2" },
+            { role: "dealer" }
+          ]
+        },
+        attributes: ['id', 'name', 'email', 'mobile_no', 'image', 'role', 'status', 'address', 'createdAt']
+      });
+
+      const formatted = await Promise.all(dealerList.map(async (d) => {
+        const dJson = d.toJSON();
+        const activeListings = property ? await property.count({
+          where: {
+            [Op.or]: [{ user_id: d.id }, { dealer_id: d.id }]
+          }
+        }) : 0;
+        const dealsClosed = deal_connect ? await deal_connect.count({
+          where: { dealer_id: d.id }
+        }) : 0;
+
+        return {
+          id: d.id,
+          name: d.name || "Verified Dealer",
+          email: d.email,
+          phone: d.mobile_no || "+91 98765 43210",
+          mobile_no: d.mobile_no,
+          company: `${d.name || "Dealer"} Real Estate`,
+          location: d.address || "Sonipat, Haryana",
+          experience: "5+ Yrs",
+          avatar: d.image || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80',
+          activeListings,
+          dealsClosed,
+          rating: "4.9"
+        };
+      }));
+
+      return helper.success(res, "Dealers fetched successfully", {
+        dealers: formatted,
+        list: formatted,
+        count: formatted.length
+      });
+    } catch (error) {
+      console.error("❌ Error fetching dealers:", error);
+      return helper.error(res, error);
+    }
   }
 };
