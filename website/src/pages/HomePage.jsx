@@ -184,7 +184,11 @@ const HomePage = ({ user }) => {
         paddingBottom: "4rem",
         overflow: "hidden"
       }}>
-        <div className="container">
+        {/* Ambient Glow Orbs for Luxury Depth */}
+        <div className="ambient-glow-orb" style={{ top: "-80px", left: "-60px" }} />
+        <div className="ambient-glow-orb" style={{ bottom: "-40px", right: "-80px", background: "radial-gradient(circle, rgba(59, 130, 246, 0.18) 0%, rgba(16, 185, 129, 0.08) 50%, transparent 70%)" }} />
+
+        <div className="container" style={{ position: "relative", zIndex: 1 }}>
           <div style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))",
@@ -193,18 +197,20 @@ const HomePage = ({ user }) => {
           }}>
             {/* Left Content */}
             <div>
-              <div style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "0.5rem",
-                padding: "0.4rem 1rem",
-                borderRadius: "var(--radius-full)",
-                backgroundColor: "var(--primary-light)",
-                color: "var(--primary)",
-                fontWeight: "700",
-                fontSize: "0.85rem",
-                marginBottom: "1.5rem"
-              }}>
+              <div 
+                className="hero-shimmer-badge"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  padding: "0.45rem 1.15rem",
+                  borderRadius: "var(--radius-full)",
+                  color: "var(--primary)",
+                  fontWeight: "700",
+                  fontSize: "0.85rem",
+                  marginBottom: "1.5rem"
+                }}
+              >
                 <span>☆ India's #1 Property Dealer Network</span>
               </div>
 
@@ -249,19 +255,19 @@ const HomePage = ({ user }) => {
               </div>
 
               {/* Highlights Chips */}
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "1.25rem", fontSize: "0.85rem", fontWeight: "600", color: "var(--text-muted)" }}>
-                <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                  <FaCheckCircle color="var(--primary)" /> Verified Dealers
-                </span>
-                <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                  <FaShieldAlt color="var(--primary)" /> Secure Platform
-                </span>
-                <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                  <FaRegCompass color="var(--primary)" /> Smart Matching
-                </span>
-                <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                  <FaHandshake color="var(--primary)" /> Deal Protection
-                </span>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.85rem", fontSize: "0.85rem", fontWeight: "600", color: "var(--text-muted)" }}>
+                <div className="highlight-chip">
+                  <FaCheckCircle color="var(--primary)" /> <span>Verified Dealers</span>
+                </div>
+                <div className="highlight-chip">
+                  <FaShieldAlt color="var(--primary)" /> <span>Secure Platform</span>
+                </div>
+                <div className="highlight-chip">
+                  <FaRegCompass color="var(--primary)" /> <span>Smart Matching</span>
+                </div>
+                <div className="highlight-chip">
+                  <FaHandshake color="var(--primary)" /> <span>Deal Protection</span>
+                </div>
               </div>
             </div>
 
@@ -306,22 +312,26 @@ const HomePage = ({ user }) => {
                 }} />
 
                 {/* Floating Live Badge */}
-                <div style={{
-                  position: "absolute",
-                  top: "20px",
-                  left: "20px",
-                  backgroundColor: "rgba(255, 255, 255, 0.92)",
-                  backdropFilter: "blur(10px)",
-                  color: "#111827",
-                  padding: "0.45rem 0.9rem",
-                  borderRadius: "30px",
-                  fontSize: "0.78rem",
-                  fontWeight: "800",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.45rem",
-                  boxShadow: "0 4px 15px rgba(0,0,0,0.15)"
-                }}>
+                <div 
+                  className="float-animated"
+                  style={{
+                    position: "absolute",
+                    top: "20px",
+                    left: "20px",
+                    backgroundColor: "rgba(255, 255, 255, 0.92)",
+                    backdropFilter: "blur(10px)",
+                    color: "#111827",
+                    padding: "0.45rem 0.9rem",
+                    borderRadius: "30px",
+                    fontSize: "0.78rem",
+                    fontWeight: "800",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.45rem",
+                    boxShadow: "0 4px 15px rgba(0,0,0,0.15)",
+                    zIndex: 2
+                  }}
+                >
                   <span style={{
                     width: "8px",
                     height: "8px",
@@ -511,7 +521,7 @@ const HomePage = ({ user }) => {
                         navigate("/pricing?msg=subscription_required");
                       }
                     }}
-                    className="card"
+                    className="card interactive-property-card"
                     style={{ 
                       textDecoration: "none", 
                       color: "inherit", 
@@ -523,25 +533,28 @@ const HomePage = ({ user }) => {
                       overflow: "hidden",
                       border: "1px solid var(--border-color)",
                       boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
-                      transition: "transform 0.2s ease, box-shadow 0.2s ease"
+                      backgroundColor: "var(--bg-card)"
                     }}
                   >
                     {/* Property Image & Badges */}
                     <div style={{ position: "relative", height: "175px", overflow: "hidden", backgroundColor: "#f3f4f6" }}>
-                      <img src={imgSrc} alt={prop.title || prop.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      <img src={imgSrc} alt={prop.title || prop.name} className="prop-card-img" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       
                       {/* Floating Badges: Only show if badge_id is present in database */}
                       {Boolean(prop.badge_id && (prop.badge || prop.badge_name)) && (
                         <div style={{ position: "absolute", top: "12px", left: "12px" }}>
-                          <span style={{ 
-                            backgroundColor: "rgba(254, 243, 199, 0.95)", 
-                            color: "#d97706", 
-                            fontSize: "0.72rem", 
-                            fontWeight: "800", 
-                            padding: "0.3rem 0.65rem", 
-                            borderRadius: "8px", 
-                            border: "1px solid #fde68a" 
-                          }}>
+                          <span 
+                            className="badge-glow"
+                            style={{ 
+                              backgroundColor: "rgba(254, 243, 199, 0.95)", 
+                              color: "#d97706", 
+                              fontSize: "0.72rem", 
+                              fontWeight: "800", 
+                              padding: "0.3rem 0.65rem", 
+                              borderRadius: "8px", 
+                              border: "1px solid #fde68a" 
+                            }}
+                          >
                             {prop.badge || prop.badge_name}
                           </span>
                         </div>
@@ -668,11 +681,13 @@ const HomePage = ({ user }) => {
       </section>
 
       {/* CTA BANNER */}
-      <section style={{
-        padding: "4rem 0",
-        background: "linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)",
-        color: "#ffffff"
-      }}>
+      <section 
+        className="animated-cta-banner"
+        style={{
+          padding: "4rem 0",
+          color: "#ffffff"
+        }}
+      >
         <div className="container" style={{
           display: "flex",
           flexWrap: "wrap",
@@ -692,8 +707,13 @@ const HomePage = ({ user }) => {
               borderRadius: "var(--radius-md)",
               fontWeight: "700",
               border: "none",
-              cursor: "pointer"
-            }}>
+              cursor: "pointer",
+              transition: "all 0.25s ease",
+              boxShadow: "0 4px 15px rgba(0,0,0,0.15)"
+            }}
+            onMouseEnter={e => e.currentTarget.style.transform = "translateY(-3px)"}
+            onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
+            >
               Browse Properties →
             </button>
             <button onClick={() => navigate("/pricing")} style={{
@@ -703,8 +723,12 @@ const HomePage = ({ user }) => {
               borderRadius: "var(--radius-md)",
               fontWeight: "700",
               cursor: "pointer",
-              border: "1px solid rgba(255,255,255,0.3)"
-            }}>
+              border: "1px solid rgba(255,255,255,0.3)",
+              transition: "all 0.25s ease"
+            }}
+            onMouseEnter={e => e.currentTarget.style.transform = "translateY(-3px)"}
+            onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
+            >
               Get Subscription →
             </button>
           </div>
@@ -715,25 +739,32 @@ const HomePage = ({ user }) => {
 };
 
 const StatCard = ({ icon, count, label, change, bg }) => (
-  <div style={{
-    backgroundColor: "var(--bg-card)",
-    borderRadius: "16px",
-    padding: "1.25rem",
-    display: "flex",
-    alignItems: "center",
-    gap: "1rem",
-    boxShadow: "var(--shadow-sm)",
-    border: "1px solid var(--border-color)"
-  }}>
-    <div style={{
-      width: "50px",
-      height: "50px",
-      borderRadius: "12px",
-      backgroundColor: bg,
+  <div 
+    className="card interactive-stat-card"
+    style={{
+      borderRadius: "16px",
+      padding: "1.25rem",
       display: "flex",
       alignItems: "center",
-      justifyContent: "center"
-    }}>
+      gap: "1rem",
+      boxShadow: "var(--shadow-sm)",
+      border: "1px solid var(--border-color)",
+      backgroundColor: "var(--bg-card)"
+    }}
+  >
+    <div 
+      className="stat-card-icon"
+      style={{
+        width: "50px",
+        height: "50px",
+        borderRadius: "12px",
+        backgroundColor: bg,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0
+      }}
+    >
       {icon}
     </div>
     <div>
@@ -745,23 +776,29 @@ const StatCard = ({ icon, count, label, change, bg }) => (
 );
 
 const StepItem = ({ num, title, desc, icon }) => (
-  <div style={{
-    backgroundColor: "var(--bg-card)",
-    padding: "2rem 1.5rem",
-    borderRadius: "16px",
-    border: "1px solid var(--border-color)",
-    textAlign: "center"
-  }}>
-    <div style={{
-      width: "56px",
-      height: "56px",
-      borderRadius: "50%",
-      backgroundColor: "var(--primary-light)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      margin: "0 auto 1.25rem auto"
-    }}>
+  <div 
+    className="card interactive-step-card"
+    style={{
+      padding: "2rem 1.5rem",
+      borderRadius: "16px",
+      border: "1px solid var(--border-color)",
+      textAlign: "center",
+      backgroundColor: "var(--bg-card)"
+    }}
+  >
+    <div 
+      className="step-icon-box"
+      style={{
+        width: "56px",
+        height: "56px",
+        borderRadius: "50%",
+        backgroundColor: "var(--primary-light)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        margin: "0 auto 1.25rem auto"
+      }}
+    >
       {icon}
     </div>
     <span style={{ fontSize: "0.8rem", fontWeight: "800", color: "var(--primary)" }}>{num}</span>
@@ -771,15 +808,18 @@ const StepItem = ({ num, title, desc, icon }) => (
 );
 
 const TestimonialCard = ({ comment, name, company, avatar }) => (
-  <div style={{
-    backgroundColor: "var(--bg-main)",
-    padding: "1.75rem",
-    borderRadius: "16px",
-    border: "1px solid var(--border-color)",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between"
-  }}>
+  <div 
+    className="card interactive-testimonial-card"
+    style={{
+      padding: "1.75rem",
+      borderRadius: "16px",
+      border: "1px solid var(--border-color)",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
+      backgroundColor: "var(--bg-main)"
+    }}
+  >
     <div>
       <div style={{ color: "#f59e0b", display: "flex", gap: "0.2rem", marginBottom: "1rem" }}>
         <FaStar /><FaStar /><FaStar /><FaStar /><FaStar />
