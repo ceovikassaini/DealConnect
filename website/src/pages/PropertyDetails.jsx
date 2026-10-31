@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { FaMapMarkerAlt, FaCheckCircle, FaPhoneAlt, FaEnvelope, FaRulerCombined, FaChevronLeft, FaChevronRight, FaImages, FaLock, FaCrown, FaTimes } from "react-icons/fa";
+import { 
+  FaMapMarkerAlt, FaCheckCircle, FaPhoneAlt, FaEnvelope, 
+  FaRulerCombined, FaChevronLeft, FaChevronRight, FaImages, 
+  FaLock, FaCrown, FaTimes, FaHandshake, FaComments, FaClock 
+} from "react-icons/fa";
+import DealChatModal from "../components/DealChatModal";
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
 const PropertyDetails = ({ user }) => {
   const { id } = useParams();
@@ -10,6 +17,10 @@ const PropertyDetails = ({ user }) => {
   const [error, setError] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+
+  // Deal Connect & Live Chat State
+  const [deal, setDeal] = useState(null);
+  const [showChatModal, setShowChatModal] = useState(false);
 
   const isSubscribed = user?.isSubscribed === true || user?.subscriptionStatus === "active" || (user?.subscriptionPlan && user?.subscriptionPlan !== "Free" && user?.subscriptionPlan !== "None");
 
@@ -36,7 +47,7 @@ const PropertyDetails = ({ user }) => {
   useEffect(() => {
     setLoading(true);
     setError(false);
-    fetch(`http://localhost:5000/api/properties/${id}`)
+    fetch(`${API_BASE}/properties/${id}`)
       .then(res => res.json())
       .then(data => {
         setLoading(false);
@@ -52,6 +63,57 @@ const PropertyDetails = ({ user }) => {
         console.error("Error fetching property details:", err);
       });
   }, [id]);
+
+  // Automatically register deal interest when any user clicks or views a property
+  useEffect(() => {
+    if (property && user?.id) {
+      const activeDealerId = property.dealerId || property.dealer_id || property.user_id;
+      // If user is not the owner dealer of the property, register interest (Stage 1: User showed interest)
+      if (Number(user.id) !== Number(activeDealerId)) {
+        fetch(`${API_BASE}/deals/connect`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user_id: user.id,
+            property_id: property.id,
+            dealer_id: activeDealerId
+          })
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success && data.deal) {
+              setDeal(data.deal);
+            }
+          })
+          .catch(err => console.error("Auto deal connect error:", err));
+      } else {
+        // Dealer viewing own property: check deal status
+        fetch(`${API_BASE}/deals/check?user_id=${user.id}&property_id=${property.id}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.success && data.deal) setDeal(data.deal);
+          })
+          .catch(() => {});
+      }
+    }
+  }, [property?.id, user?.id]);
+
+  // Periodically check deal status updates (e.g. when dealer accepts lead or updates stage)
+  useEffect(() => {
+    if (property?.id && user?.id) {
+      const timer = setInterval(() => {
+        fetch(`${API_BASE}/deals/check?user_id=${user.id}&property_id=${property.id}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.success && data.deal) {
+              setDeal(data.deal);
+            }
+          })
+          .catch(() => {});
+      }, 4000);
+      return () => clearInterval(timer);
+    }
+  }, [property?.id, user?.id]);
 
   if (loading) {
     return (
@@ -304,6 +366,100 @@ const PropertyDetails = ({ user }) => {
                   </button>
                 </>
               )}
+
+              {/* Deal Status & Live Chat Section */}
+              <div style={{
+                marginTop: "1.25rem",
+                paddingTop: "1.25rem",
+                borderTop: "1px solid var(--border-color)"
+              }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--text-muted)", textTransform: "uppercase" }}>
+                  Deal Status & Chat
+                </span>
+
+                {user ? (
+                  deal ? (
+                    <div style={{ marginTop: "0.6rem" }}>
+                      <div style={{
+                        padding: "0.75rem",
+                        borderRadius: "12px",
+                        backgroundColor: deal.status >= 2 ? "#dbeafe" : "#fef3c7",
+                        color: deal.status >= 2 ? "#1e40af" : "#92400e",
+                        fontSize: "0.82rem",
+                        fontWeight: "700",
+                        marginBottom: "0.75rem",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.5rem"
+                      }}>
+                        {deal.status >= 2 ? <FaCheckCircle color="#2563eb" /> : <FaClock color="#d97706" />}
+                        <span>
+                          {deal.status === 1 && "Stage 1: User showed interest (Waiting for Dealer)"}
+                          {deal.status === 2 && "Stage 2: Dealer accepted lead (Chat Active)"}
+                          {deal.status === 3 && "Stage 3: Dealer contacted user"}
+                          {deal.status === 4 && "Stage 4: Site visit scheduled"}
+                          {deal.status === 5 && "Stage 5: Site visit completed"}
+                        </span>
+                      </div>
+
+                      {deal.status >= 2 ? (
+                        <button
+                          onClick={() => setShowChatModal(true)}
+                          className="btn-primary"
+                          style={{
+                            width: "100%",
+                            justifyContent: "center",
+                            backgroundColor: "#2563eb",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "0.5rem",
+                            fontWeight: "800",
+                            boxShadow: "0 4px 12px rgba(37, 99, 235, 0.25)"
+                          }}
+                        >
+                          <FaComments /> Live Chat with Dealer
+                        </button>
+                      ) : (
+                        <p style={{ fontSize: "0.78rem", color: "var(--text-muted)", margin: 0, lineHeight: "1.45" }}>
+                          🔔 Your interest has been received by <strong>{property.dealerName || "the dealer"}</strong>! As soon as the dealer accepts your lead, live chat will start here.
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <div style={{ marginTop: "0.6rem" }}>
+                      <button
+                        onClick={() => {
+                          const activeDealerId = property.dealerId || property.dealer_id || property.user_id;
+                          fetch(`${API_BASE}/deals/connect`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              user_id: user.id,
+                              property_id: property.id,
+                              dealer_id: activeDealerId
+                            })
+                          })
+                            .then(res => res.json())
+                            .then(data => {
+                              if (data.success && data.deal) setDeal(data.deal);
+                            })
+                            .catch(err => console.error("Error connecting deal:", err));
+                        }}
+                        className="btn-primary"
+                        style={{ width: "100%", justifyContent: "center", display: "inline-flex", alignItems: "center", gap: "0.5rem" }}
+                      >
+                        <FaHandshake /> Express Interest & Connect
+                      </button>
+                    </div>
+                  )
+                ) : (
+                  <div style={{ marginTop: "0.6rem" }}>
+                    <Link to="/login" className="btn-outline" style={{ width: "100%", justifyContent: "center", fontSize: "0.82rem" }}>
+                      Log in to Connect with Dealer & Chat
+                    </Link>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -393,6 +549,25 @@ const PropertyDetails = ({ user }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Live Chat Modal with Dealer */}
+      {showChatModal && deal && (
+        <DealChatModal
+          deal={{
+            ...deal,
+            propertyTitle: property?.name || property?.title || deal?.propertyTitle,
+            propertyImage: property?.images?.[0] || deal?.propertyImage,
+            propertyPrice: property?.price || deal?.propertyPrice,
+            dealerName: property?.dealerName || deal?.dealerName,
+            dealerPhone: property?.dealerPhone || deal?.dealerPhone,
+            user_id: user?.id,
+            dealer_id: property?.dealerId || property?.dealer_id || property?.user_id
+          }}
+          currentUser={user}
+          onClose={() => setShowChatModal(false)}
+          onDealUpdated={(updated) => setDeal(prev => ({ ...prev, ...updated }))}
+        />
       )}
     </div>
   );

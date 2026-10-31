@@ -33,6 +33,7 @@ import Notifications from "./pages/dealer/Notifications";
 import DealerSettings from "./pages/dealer/DealerSettings";
 import UserLayout from "./pages/user/UserLayout";
 import UserDashboard from "./pages/user/UserDashboard";
+import UserDeals from "./pages/user/UserDeals";
 
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
@@ -94,6 +95,7 @@ function App() {
             <Route path="/user" element={user ? <UserLayout user={user} /> : <Navigate to="/login?msg=login_required" replace />}>
               <Route path="dashboard" element={<UserDashboard user={user} setUser={setUser} />} />
               <Route path="post-requirement" element={<AddRequirement user={user} />} />
+              <Route path="my-deals" element={<UserDeals user={user} />} />
             </Route>
 
             {/* Dealer Dashboard */}
@@ -103,7 +105,7 @@ function App() {
               <Route path="add-property" element={<AddProperty user={user} />} />
               <Route path="my-requirements" element={<MyRequirements user={user} />} />
               <Route path="add-requirement" element={<AddRequirement user={user} />} />
-              <Route path="my-deals" element={<MyDeals />} />
+              <Route path="my-deals" element={<MyDeals user={user} />} />
               <Route path="subscription" element={<SubscriptionPlan />} />
               <Route path="notifications" element={<Notifications />} />
               <Route path="settings" element={<DealerSettings user={user} setUser={setUser} />} />

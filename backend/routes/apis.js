@@ -6,6 +6,7 @@ const authenticateJWT = require('../middleware/authMiddleware').authenticateJWT;
 const authController = require('../controllers/apis/authController');
 const requirementcontroller = require('../controllers/apis/requirementcontroller');
 const propertycontroller = require('../controllers/apis/propertycontroller');
+const dealController = require('../controllers/apis/dealController');
 
 module.exports = (io) => {
 
@@ -58,6 +59,22 @@ module.exports = (io) => {
   router.delete('/delete_property/:id', propertycontroller.deleteProperty);
   router.delete('/properties/:id', propertycontroller.deleteProperty);
   router.post('/delete_property', propertycontroller.deleteProperty);
+
+  // ─── Deal Connect & Chat Routes ───
+  router.post('/deals/connect', dealController.connectDeal);
+  router.post('/deal_connect', dealController.connectDeal);
+  router.get('/deals/check', dealController.checkDeal);
+  router.get('/dealer/deals', dealController.getDealerDeals);
+  router.get('/user/deals', dealController.getUserDeals);
+  router.get('/deals/dealer', dealController.getDealerDeals);
+  router.get('/deals/user', dealController.getUserDeals);
+  router.put('/deals/:id/status', dealController.updateDealStatus);
+  router.post('/deals/:id/status', dealController.updateDealStatus);
+  router.post('/deals/update_status', dealController.updateDealStatus);
+  router.get('/deals/:id/messages', dealController.getDealChats);
+  router.get('/deals/:id/chats', dealController.getDealChats);
+  router.post('/deals/:id/messages', dealController.sendDealChat);
+  router.post('/deals/chat', dealController.sendDealChat);
 
   // ─── Header Auth ───
   router.use(authenticateHeader);

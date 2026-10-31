@@ -2,7 +2,7 @@ module.exports = (db) => {
   if (db._associationsLoaded) return;
   db._associationsLoaded = true;
 
-  const { users, property, property_images, properties, dealer_requirements, requirements, categories, sub_categories, deals, dealer_subscriptions, subscription_buy, users_vehicle, users_license, vehicle_images, payments, notifications, jobs, users_identity_verification, users_nsw, users_vehicle_insurance, tax_rto, geofences, geofence_cities, geofence_areas, geofence_pincodes, ratings, promo_codes, promo_code_users, vehicle_services, users_sos, activity_logs } = db;
+  const { users, property, property_images, properties, dealer_requirements, requirements, categories, sub_categories, deals, dealer_subscriptions, subscription_buy, users_vehicle, users_license, vehicle_images, payments, notifications, jobs, users_identity_verification, users_nsw, users_vehicle_insurance, tax_rto, geofences, geofence_cities, geofence_areas, geofence_pincodes, ratings, promo_codes, promo_code_users, vehicle_services, users_sos, activity_logs, deal_connect, deal_connect_chat } = db;
 
   if (users && subscription_buy) {
     users.hasMany(subscription_buy, { foreignKey: 'user_id', as: 'subscription_buys' });
@@ -231,5 +231,28 @@ module.exports = (db) => {
 
     promo_code_users.belongsTo(users, { foreignKey: 'user_id', as: 'user' });
     users.hasMany(promo_code_users, { foreignKey: 'user_id', as: 'promoAssignments' });
+  }
+
+  // Deal Connect & Deal Connect Chat associations
+  if (deal_connect) {
+    if (users) {
+      deal_connect.belongsTo(users, { foreignKey: 'user_id', as: 'user' });
+      deal_connect.belongsTo(users, { foreignKey: 'dealer_id', as: 'dealer' });
+      users.hasMany(deal_connect, { foreignKey: 'dealer_id', as: 'dealer_deals' });
+      users.hasMany(deal_connect, { foreignKey: 'user_id', as: 'user_deals' });
+    }
+    if (property) {
+      deal_connect.belongsTo(property, { foreignKey: 'property_id', as: 'property' });
+      property.hasMany(deal_connect, { foreignKey: 'property_id', as: 'deals' });
+    }
+    if (deal_connect_chat) {
+      deal_connect.hasMany(deal_connect_chat, { foreignKey: 'deal_connect_id', as: 'chats' });
+      deal_connect_chat.belongsTo(deal_connect, { foreignKey: 'deal_connect_id', as: 'deal' });
+    }
+  }
+
+  if (deal_connect_chat && users) {
+    deal_connect_chat.belongsTo(users, { foreignKey: 'sender_id', as: 'sender' });
+    deal_connect_chat.belongsTo(users, { foreignKey: 'reciver_id', as: 'receiver' });
   }
 };

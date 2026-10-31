@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "test": "",
-    "start": "node ./dealconnect.js"
+    "start": "nodemon ./dealconnect.js",
+    "dev": "nodemon ./dealconnect.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { 
-  FaChartPie, FaPlusSquare, FaSignOutAlt
+  FaChartPie, FaPlusSquare, FaSignOutAlt, FaHandshake
 } from "react-icons/fa";
 
 const UserLayout = ({ user }) => {
@@ -32,6 +32,9 @@ const UserLayout = ({ user }) => {
         </NavLink>
         <NavLink to={isSubscribed ? "/user/post-requirement" : "/pricing?msg=subscription_required"} className={navClass}>
           <FaPlusSquare /> Post Requirement
+        </NavLink>
+        <NavLink to="/user/my-deals" className={navClass}>
+          <FaHandshake /> My Inquiries & Deals
         </NavLink>
 
         <div style={{ marginTop: "auto", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}>
