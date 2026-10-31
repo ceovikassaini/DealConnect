@@ -29,7 +29,7 @@ const DealsListing = () => {
 
             <div style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))",
               gap: "2rem"
             }}>
               <StepItem num="01" title="Join as Dealer / User" desc="Create your profile and verify your details" icon={<FaUserTie size={24} color="#4f46e5" />} />
@@ -43,7 +43,7 @@ const DealsListing = () => {
           {deals.map(deal => (
             <div key={deal.id} className="card" style={{ padding: "1.5rem", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "1rem" }}>
               <div>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.4rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.4rem", flexWrap: "wrap" }}>
                   <span className="badge badge-featured">{deal.dealCode}</span>
                   <span style={{
                     fontSize: "0.8rem",
@@ -57,13 +57,13 @@ const DealsListing = () => {
                   </span>
                 </div>
                 <h3 style={{ fontSize: "1.2rem", fontWeight: "700", marginBottom: "0.4rem" }}>{deal.propertyTitle}</h3>
-                <div style={{ fontSize: "0.85rem", color: "var(--text-muted)", display: "flex", gap: "1.5rem" }}>
+                <div style={{ fontSize: "0.85rem", color: "var(--text-muted)", display: "flex", flexWrap: "wrap", gap: "0.5rem 1.5rem" }}>
                   <span>Seller Dealer: <strong>{deal.sellerDealer}</strong></span>
                   <span>Buyer Dealer: <strong>{deal.buyerDealer}</strong></span>
                 </div>
               </div>
 
-              <div style={{ textAlign: "right" }}>
+              <div>
                 <div style={{ fontSize: "1.3rem", fontWeight: "800", color: "var(--primary)" }}>{deal.price}</div>
                 <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Commission: {deal.commission}</div>
               </div>

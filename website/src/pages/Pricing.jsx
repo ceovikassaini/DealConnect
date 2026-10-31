@@ -367,11 +367,12 @@ const Pricing = ({ user, setUser }) => {
         ) : (
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(310px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))",
             gap: "2rem",
             alignItems: "stretch",
             maxWidth: "820px",
-            margin: "0 auto"
+            margin: "0 auto",
+            width: "100%"
           }}>
             {currentPlans.map((plan, index) => {
               const userPlanLower = (user?.subscriptionPlan || "").toLowerCase();
@@ -417,7 +418,7 @@ const Pricing = ({ user, setUser }) => {
                   key={plan.id || index} 
                   className="card" 
                   style={{ 
-                    padding: "2.25rem 2rem", 
+                    padding: "clamp(1.5rem, 4vw, 2.25rem) clamp(1rem, 3.5vw, 2rem)", 
                     display: "flex", 
                     flexDirection: "column", 
                     justifyContent: "space-between",

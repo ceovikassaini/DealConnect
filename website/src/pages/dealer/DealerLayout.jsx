@@ -1,26 +1,99 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { 
   FaChartPie, FaBuilding, FaPlusSquare, FaListAlt, 
-  FaHandshake, FaBell, FaCrown, FaCog, FaUserTie, FaSignOutAlt
+  FaHandshake, FaBell, FaCrown, FaCog, FaUserTie, FaSignOutAlt,
+  FaBars, FaTimes
 } from "react-icons/fa";
 
 const DealerLayout = ({ user }) => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const isSubscribed = user?.isSubscribed === true || user?.subscriptionStatus === "active" || (user?.subscriptionPlan && user?.subscriptionPlan !== "Free" && user?.subscriptionPlan !== "None");
 
+  const closeSidebar = () => setSidebarOpen(false);
+
   return (
-    <div style={{ display: "flex", minHeight: "85vh", backgroundColor: "var(--bg-main)" }}>
-      {/* Sidebar Navigation */}
-      <aside style={{
-        width: "260px",
+    <div className="portal-layout">
+      {/* Mobile Top Sub-Header for Portal */}
+      <div className="dealer-mobile-bar" style={{
         backgroundColor: "var(--bg-card)",
-        borderRight: "1px solid var(--border-color)",
-        padding: "1.5rem 1rem",
-        display: "flex",
-        flexDirection: "column",
-        gap: "0.5rem"
+        borderBottom: "1px solid var(--border-color)",
+        padding: "0.75rem 1rem",
+        display: "none",
+        alignItems: "center",
+        justifyContent: "space-between",
+        width: "100%",
+        zIndex: 90
       }}>
-        <div style={{ padding: "0.5rem 0.75rem", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+          <img 
+            src={user?.avatar || "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80"} 
+            alt="User" 
+            style={{ width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover" }} 
+          />
+          <div>
+            <strong style={{ fontSize: "0.88rem", display: "block", color: "var(--text-main)" }}>
+              {user?.name || "Dealer"}
+            </strong>
+            <span style={{ fontSize: "0.72rem", color: "var(--primary)", fontWeight: "700" }}>
+              Dealer Portal
+            </span>
+          </div>
+        </div>
+
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.4rem",
+            padding: "0.45rem 0.85rem",
+            borderRadius: "10px",
+            backgroundColor: "var(--primary-light)",
+            color: "var(--primary)",
+            fontWeight: "700",
+            fontSize: "0.82rem",
+            border: "none",
+            cursor: "pointer"
+          }}
+        >
+          {sidebarOpen ? <FaTimes /> : <FaBars />}
+          <span>{sidebarOpen ? "Close Menu" : "Portal Menu"}</span>
+        </button>
+      </div>
+
+      {/* Backdrop for Mobile Drawer */}
+      {sidebarOpen && (
+        <div 
+          onClick={closeSidebar}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.5)",
+            backdropFilter: "blur(2px)",
+            zIndex: 98
+          }}
+        />
+      )}
+
+      {/* Sidebar Navigation */}
+      <aside 
+        className={`portal-sidebar ${sidebarOpen ? "sidebar-open-mobile" : ""}`}
+        style={{
+          width: "260px",
+          backgroundColor: "var(--bg-card)",
+          borderRight: "1px solid var(--border-color)",
+          padding: "1.5rem 1rem",
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.45rem",
+          flexShrink: 0
+        }}
+      >
+        <div style={{ padding: "0.5rem 0.75rem", marginBottom: "0.75rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
           <img src={user?.avatar || "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80"} alt="User" style={{ width: "42px", height: "42px", borderRadius: "50%", objectFit: "cover" }} />
           <div>
             <strong style={{ fontSize: "0.95rem", display: "block", color: "var(--text-main)" }}>{user?.name || "Amit Sharma"}</strong>
@@ -28,31 +101,31 @@ const DealerLayout = ({ user }) => {
           </div>
         </div>
 
-        <NavLink to="/dealer/dashboard" className={navClass}>
+        <NavLink to="/dealer/dashboard" onClick={closeSidebar} className={navClass}>
           <FaChartPie /> Dealer Dashboard
         </NavLink>
-        <NavLink to="/dealer/my-properties" className={navClass}>
+        <NavLink to="/dealer/my-properties" onClick={closeSidebar} className={navClass}>
           <FaBuilding /> My Properties
         </NavLink>
-        <NavLink to={isSubscribed ? "/dealer/add-property" : "/pricing?msg=subscription_required"} className={navClass}>
+        <NavLink to={isSubscribed ? "/dealer/add-property" : "/pricing?msg=subscription_required"} onClick={closeSidebar} className={navClass}>
           <FaPlusSquare /> Add Property
         </NavLink>
-        <NavLink to="/dealer/my-requirements" className={navClass}>
+        <NavLink to="/dealer/my-requirements" onClick={closeSidebar} className={navClass}>
           <FaListAlt /> My Requirements
         </NavLink>
-        <NavLink to={isSubscribed ? "/dealer/add-requirement" : "/pricing?msg=subscription_required"} className={navClass}>
+        <NavLink to={isSubscribed ? "/dealer/add-requirement" : "/pricing?msg=subscription_required"} onClick={closeSidebar} className={navClass}>
           <FaPlusSquare /> Add Requirement
         </NavLink>
-        <NavLink to="/dealer/my-deals" className={navClass}>
+        <NavLink to="/dealer/my-deals" onClick={closeSidebar} className={navClass}>
           <FaHandshake /> My Deals
         </NavLink>
-        <NavLink to="/dealer/notifications" className={navClass}>
+        <NavLink to="/dealer/notifications" onClick={closeSidebar} className={navClass}>
           <FaBell /> Notifications
         </NavLink>
-        <NavLink to="/dealer/subscription" className={navClass}>
+        <NavLink to="/dealer/subscription" onClick={closeSidebar} className={navClass}>
           <FaCrown /> Subscription / Plan
         </NavLink>
-        <NavLink to="/dealer/settings" className={navClass}>
+        <NavLink to="/dealer/settings" onClick={closeSidebar} className={navClass}>
           <FaCog /> Settings
         </NavLink>
 
@@ -94,9 +167,32 @@ const DealerLayout = ({ user }) => {
       </aside>
 
       {/* Main Content Area */}
-      <main style={{ flex: 1, padding: "2rem" }}>
+      <main className="portal-main">
         <Outlet />
       </main>
+
+      <style>{`
+        @media (max-width: 992px) {
+          .dealer-mobile-bar {
+            display: flex !important;
+          }
+          .portal-sidebar {
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 99;
+            transform: translateX(-100%);
+            box-shadow: 0 0 25px rgba(0,0,0,0.3);
+            width: 270px !important;
+            height: 100vh !important;
+            overflow-y: auto;
+          }
+          .portal-sidebar.sidebar-open-mobile {
+            transform: translateX(0) !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };

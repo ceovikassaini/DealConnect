@@ -261,7 +261,7 @@ const MyDeals = ({ user }) => {
       {/* Summary Counters */}
       <div style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+        gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 160px), 1fr))",
         gap: "1rem",
         marginBottom: "1.75rem"
       }}>
@@ -442,7 +442,7 @@ const MyDeals = ({ user }) => {
                 {/* Middle section: Buyer info & Stage Progress Indicator */}
                 <div style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))",
                   gap: "1.25rem",
                   marginBottom: "1.25rem"
                 }}>

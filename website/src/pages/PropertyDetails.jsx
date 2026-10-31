@@ -162,11 +162,11 @@ const PropertyDetails = ({ user }) => {
           </Link>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "2rem" }}>
+        <div className="property-details-layout">
           {/* Main Info */}
           <div>
             {/* Multiple Images Carousel / Main Image View */}
-            <div style={{ position: "relative", borderRadius: "20px", overflow: "hidden", height: "420px", marginBottom: "1rem", backgroundColor: "#000" }}>
+            <div style={{ position: "relative", borderRadius: "20px", overflow: "hidden", height: "clamp(240px, 48vw, 440px)", marginBottom: "1rem", backgroundColor: "#000" }}>
               <img 
                 src={images[activeImageIndex]} 
                 alt={`${property.title} - Photo ${activeImageIndex + 1}`} 
@@ -223,21 +223,21 @@ const PropertyDetails = ({ user }) => {
             )}
 
             {/* Property Overview Card */}
-            <div style={{ backgroundColor: "var(--bg-card)", padding: "1.75rem", borderRadius: "16px", border: "1px solid var(--border-color)", marginBottom: "1.5rem" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
+            <div style={{ backgroundColor: "var(--bg-card)", padding: "clamp(1rem, 3vw, 1.75rem)", borderRadius: "16px", border: "1px solid var(--border-color)", marginBottom: "1.5rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem", flexWrap: "wrap", gap: "0.75rem" }}>
                 <div>
-                  <h1 style={{ fontSize: "1.8rem", fontWeight: "800", marginBottom: "0.4rem" }}>{property.title || property.name}</h1>
-                  <p style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                  <h1 style={{ fontSize: "clamp(1.4rem, 3.5vw, 1.8rem)", fontWeight: "800", marginBottom: "0.4rem" }}>{property.title || property.name}</h1>
+                  <p style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.9rem" }}>
                     <FaMapMarkerAlt color="var(--primary)" /> {property.location}
                   </p>
                 </div>
-                <div style={{ fontSize: "1.8rem", fontWeight: "800", color: "var(--primary)" }}>
+                <div style={{ fontSize: "clamp(1.4rem, 3.5vw, 1.8rem)", fontWeight: "800", color: "var(--primary)" }}>
                   ₹ {property.price}
                 </div>
               </div>
 
               {/* Property Details Grid */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem", backgroundColor: "var(--bg-main)", padding: "1rem", borderRadius: "12px", marginBottom: "1.5rem" }}>
+              <div className="property-specs-grid" style={{ backgroundColor: "var(--bg-main)", padding: "1rem", borderRadius: "12px", marginBottom: "1.5rem" }}>
                 <div>
                   <span style={{ fontSize: "0.8rem", color: "var(--text-muted)", display: "block" }}>Property Type</span>
                   <strong style={{ fontSize: "0.95rem" }}>{property.propertyType || "Plot"}</strong>

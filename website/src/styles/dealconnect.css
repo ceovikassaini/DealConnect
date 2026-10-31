@@ -280,3 +280,201 @@ button {
   animation: pulseGlow 2.5s infinite ease-in-out;
 }
 
+/* ============================================================
+   COMPREHENSIVE RESPONSIVE STYLES & MOBILE OVERRIDES
+   ============================================================ */
+
+/* Global container and body bounds */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+img, video, iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Container fluid scaling */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 0.85rem !important;
+  }
+}
+
+/* Prevent auto-zoom on iOS mobile inputs */
+@media screen and (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Responsive Cards Grid Utility */
+.responsive-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .responsive-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Responsive Filter Bar Grid */
+.responsive-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) 120px;
+  gap: 1rem;
+  align-items: end;
+}
+
+@media (max-width: 768px) {
+  .responsive-filter-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+  .responsive-filter-grid > button,
+  .responsive-filter-grid .filter-submit-btn {
+    grid-column: 1 / -1;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .responsive-filter-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+/* Property Details 2-Column to 1-Column Responsive Grid */
+.property-details-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 992px) {
+  .property-details-layout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* Property Overview Specs 4-col to 2-col to 1-col */
+.property-specs-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .property-specs-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .property-specs-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+}
+
+/* Responsive Table Scroll Container */
+.responsive-table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Portal Sidebar Layouts (Dealer & User) */
+.portal-layout {
+  display: flex;
+  min-height: 85vh;
+  background-color: var(--bg-main);
+  position: relative;
+  width: 100%;
+}
+
+.portal-sidebar {
+  width: 260px;
+  background-color: var(--bg-card);
+  border-right: 1px solid var(--border-color);
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.portal-main {
+  flex: 1;
+  padding: 2rem;
+  min-width: 0; /* Prevents flex children from blowing out width */
+  width: 100%;
+}
+
+@media (max-width: 992px) {
+  .portal-layout {
+    flex-direction: column;
+  }
+  .portal-main {
+    padding: 1.25rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .portal-main {
+    padding: 1rem 0.65rem;
+  }
+}
+
+/* Modal Responsive Rules */
+@media (max-width: 768px) {
+  .deal-chat-modal-content {
+    width: 98vw !important;
+    height: 94vh !important;
+    max-height: 94vh !important;
+    border-radius: 16px !important;
+  }
+  .deal-chat-header {
+    padding: 0.85rem 1rem !important;
+  }
+  .deal-chat-thread {
+    padding: 1rem !important;
+  }
+  .deal-chat-footer {
+    padding: 0.75rem 1rem !important;
+  }
+}
+
+/* Header Responsive Navigation */
+@media (max-width: 1220px) {
+  .desktop-nav,
+  .desktop-user-actions {
+    display: none !important;
+  }
+  .mobile-hamburger-btn {
+    display: flex !important;
+  }
+}
+
+/* Global Media Scaling */
+img, svg, video {
+  max-width: 100%;
+}
+

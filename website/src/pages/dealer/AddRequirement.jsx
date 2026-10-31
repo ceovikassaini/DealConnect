@@ -143,7 +143,7 @@ const AddRequirement = ({ user }) => {
         </p>
       </div>
 
-      <div className="card" style={{ padding: "2rem" }}>
+      <div className="card" style={{ padding: "clamp(1rem, 3.5vw, 2rem)" }}>
         <form onSubmit={handleSubmit}>
           
           {/* Title */}
@@ -160,7 +160,7 @@ const AddRequirement = ({ user }) => {
           </div>
 
           {/* Category & Subcategory */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.25rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 200px), 1fr))", gap: "1rem", marginBottom: "1.25rem" }}>
             <div>
               <label style={labelStyle}>Category *</label>
               <select 
@@ -197,7 +197,7 @@ const AddRequirement = ({ user }) => {
           </div>
 
           {/* Requirement Type & Location */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1rem", marginBottom: "1.25rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 180px), 1fr))", gap: "1rem", marginBottom: "1.25rem" }}>
             <div>
               <label style={labelStyle}>Requirement Type</label>
               <select 
@@ -225,7 +225,7 @@ const AddRequirement = ({ user }) => {
           </div>
 
           {/* Budget Range & Min/Max */}
-          <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr", gap: "1rem", marginBottom: "1.25rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 150px), 1fr))", gap: "1rem", marginBottom: "1.25rem" }}>
             <div>
               <label style={labelStyle}>Budget Display *</label>
               <input 

@@ -118,12 +118,7 @@ const PropertiesListing = ({ user }) => {
           marginBottom: "2rem",
           boxShadow: "0 4px 20px rgba(0,0,0,0.04)"
         }}>
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr)) 120px",
-            gap: "1rem",
-            alignItems: "end"
-          }}>
+          <div className="responsive-filter-grid">
             {/* Search Input */}
             <div>
               <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-muted)", marginBottom: "0.35rem", display: "block" }}>Search Location / Title</label>
@@ -194,12 +189,10 @@ const PropertiesListing = ({ user }) => {
         </div>
 
         {/* Properties Cards Grid */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: filtered.length > 0 ? "repeat(auto-fill, 310px)" : "1fr",
-          gap: "1.5rem",
-          justifyContent: "flex-start"
-        }}>
+        <div 
+          className={filtered.length > 0 ? "responsive-cards-grid" : ""}
+          style={filtered.length === 0 ? { display: "grid", gridTemplateColumns: "1fr" } : {}}
+        >
           {filtered.length === 0 ? (
             <div style={{ textAlign: "center", padding: "4rem 1rem", backgroundColor: "var(--bg-card)", borderRadius: "16px", border: "1px dashed var(--border-color)", gridColumn: "1 / -1" }}>
               <h3 style={{ fontSize: "1.3rem", fontWeight: "700", marginBottom: "0.5rem" }}>No Properties Found</h3>
@@ -242,7 +235,7 @@ const PropertiesListing = ({ user }) => {
                     color: "inherit", 
                     display: "flex", 
                     flexDirection: "column",
-                    width: "310px",
+                    width: "100%",
                     padding: "0",
                     borderRadius: "18px",
                     overflow: "hidden",

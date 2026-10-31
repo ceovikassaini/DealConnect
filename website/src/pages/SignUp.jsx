@@ -75,8 +75,8 @@ const SignUp = ({ setUser }) => {
   };
 
   return (
-    <div style={{ backgroundColor: "var(--bg-main)", minHeight: "85vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
-      <div className="card" style={{ maxWidth: "460px", width: "100%", padding: "2.5rem", borderRadius: "20px" }}>
+    <div style={{ backgroundColor: "var(--bg-main)", minHeight: "85vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "clamp(1rem, 3vw, 2rem)" }}>
+      <div className="card" style={{ maxWidth: "460px", width: "100%", padding: "clamp(1.25rem, 5vw, 2.5rem)", borderRadius: "20px" }}>
         {errorMsg && (
           <div style={{ backgroundColor: "#fee2e2", color: "#ef4444", padding: "0.75rem", borderRadius: "10px", fontSize: "0.85rem", fontWeight: "700", textAlign: "center", marginBottom: "1.5rem" }}>
             ❌ {errorMsg}

@@ -158,30 +158,36 @@ const DealChatModal = ({ deal, currentUser, onClose, onDealUpdated }) => {
       alignItems: "center",
       justifyContent: "center",
       zIndex: 99999,
-      padding: "1rem"
+      padding: "clamp(0.4rem, 2vw, 1rem)"
     }}>
-      <div style={{
-        backgroundColor: "var(--bg-card)",
-        width: "95vw",
-        maxWidth: "960px",
-        height: "90vh",
-        maxHeight: "840px",
-        borderRadius: "24px",
-        boxShadow: "0 25px 60px -15px rgba(0, 0, 0, 0.45)",
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-        border: "1px solid var(--border-color)"
-      }}>
-        {/* Header */}
-        <div style={{
-          padding: "1.15rem 1.75rem",
-          borderBottom: "1px solid var(--border-color)",
-          backgroundColor: "var(--bg-main)",
+      <div 
+        className="deal-chat-modal-content"
+        style={{
+          backgroundColor: "var(--bg-card)",
+          width: "95vw",
+          maxWidth: "960px",
+          height: "90vh",
+          maxHeight: "840px",
+          borderRadius: "24px",
+          boxShadow: "0 25px 60px -15px rgba(0, 0, 0, 0.45)",
           display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center"
-        }}>
+          flexDirection: "column",
+          overflow: "hidden",
+          border: "1px solid var(--border-color)"
+        }}
+      >
+        {/* Header */}
+        <div 
+          className="deal-chat-header"
+          style={{
+            padding: "1.15rem 1.75rem",
+            borderBottom: "1px solid var(--border-color)",
+            backgroundColor: "var(--bg-main)",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center"
+          }}
+        >
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             <div style={{
               width: "54px",
@@ -308,15 +314,18 @@ const DealChatModal = ({ deal, currentUser, onClose, onDealUpdated }) => {
         </div>
 
         {/* Message Thread */}
-        <div style={{
-          flex: 1,
-          overflowY: "auto",
-          padding: "1.5rem 1.75rem",
-          display: "flex",
-          flexDirection: "column",
-          gap: "1rem",
-          backgroundColor: "var(--bg-main)"
-        }}>
+        <div 
+          className="deal-chat-thread"
+          style={{
+            flex: 1,
+            overflowY: "auto",
+            padding: "1.5rem 1.75rem",
+            display: "flex",
+            flexDirection: "column",
+            gap: "1rem",
+            backgroundColor: "var(--bg-main)"
+          }}
+        >
           {loading ? (
             <div style={{ textAlign: "center", margin: "auto", color: "var(--text-muted)", fontSize: "0.95rem" }}>
               Loading conversation...
@@ -485,6 +494,7 @@ const DealChatModal = ({ deal, currentUser, onClose, onDealUpdated }) => {
             {/* Message Input Form */}
             <form
               onSubmit={handleSendMessage}
+              className="deal-chat-footer"
               style={{
                 padding: "1rem 1.75rem",
                 backgroundColor: "var(--bg-card)",

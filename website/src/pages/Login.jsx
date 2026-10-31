@@ -72,8 +72,8 @@ const Login = ({ setUser }) => {
   };
 
   return (
-    <div style={{ backgroundColor: "var(--bg-main)", minHeight: "85vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
-      <div className="card" style={{ maxWidth: "440px", width: "100%", padding: "2.5rem", borderRadius: "20px" }}>
+    <div style={{ backgroundColor: "var(--bg-main)", minHeight: "85vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "clamp(1rem, 3vw, 2rem)" }}>
+      <div className="card" style={{ maxWidth: "440px", width: "100%", padding: "clamp(1.25rem, 5vw, 2.5rem)", borderRadius: "20px" }}>
         {msg === "login_required" && (
           <div style={{ backgroundColor: "#fef3c7", color: "#d97706", padding: "0.75rem", borderRadius: "10px", fontSize: "0.85rem", fontWeight: "700", textAlign: "center", marginBottom: "1.5rem" }}>
             🔒 Please login or sign up to add a property or requirement!

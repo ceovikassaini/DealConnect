@@ -187,8 +187,8 @@ const HomePage = ({ user }) => {
         <div className="container">
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-            gap: "3rem",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))",
+            gap: "2.5rem",
             alignItems: "center"
           }}>
             {/* Left Content */}
@@ -209,7 +209,7 @@ const HomePage = ({ user }) => {
               </div>
 
               <h1 style={{
-                fontSize: "clamp(2.3rem, 4vw, 3.4rem)",
+                fontSize: "clamp(2.1rem, 4vw, 3.4rem)",
                 fontWeight: "800",
                 letterSpacing: "-0.02em",
                 lineHeight: "1.2",
@@ -229,7 +229,7 @@ const HomePage = ({ user }) => {
               </h1>
 
               <p style={{
-                fontSize: "1.1rem",
+                fontSize: "1.05rem",
                 color: "var(--text-muted)",
                 lineHeight: "1.6",
                 marginBottom: "2rem",
@@ -271,7 +271,7 @@ const HomePage = ({ user }) => {
                 borderRadius: "24px",
                 overflow: "hidden",
                 boxShadow: "0 20px 45px rgba(0,0,0,0.18)",
-                height: "440px",
+                height: "clamp(250px, 45vw, 440px)",
                 position: "relative",
                 backgroundColor: "#0f172a"
               }}>
@@ -406,12 +406,7 @@ const HomePage = ({ user }) => {
             </div>
 
             {/* Filter Form */}
-            <form onSubmit={handleSearch} style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr)) 120px",
-              gap: "1rem",
-              alignItems: "end"
-            }}>
+            <form onSubmit={handleSearch} className="responsive-filter-grid">
               <div>
                 <label style={labelStyle}>Location</label>
                 <input 
@@ -486,12 +481,10 @@ const HomePage = ({ user }) => {
             </Link>
           </div>
 
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: featuredProperties.length > 0 ? "repeat(auto-fill, 310px)" : "1fr",
-            gap: "1.5rem",
-            justifyContent: "flex-start"
-          }}>
+          <div 
+            className={featuredProperties.length > 0 ? "responsive-cards-grid" : ""}
+            style={featuredProperties.length === 0 ? { display: "grid", gridTemplateColumns: "1fr" } : {}}
+          >
             {featuredProperties.length === 0 ? (
               <div style={{ textAlign: "center", padding: "3rem 1rem", backgroundColor: "var(--bg-main)", borderRadius: "16px", border: "1px dashed var(--border-color)", gridColumn: "1 / -1" }}>
                 <h3 style={{ fontSize: "1.2rem", fontWeight: "700", marginBottom: "0.5rem" }}>No Properties Found in Database</h3>
@@ -524,7 +517,7 @@ const HomePage = ({ user }) => {
                       color: "inherit", 
                       display: "flex", 
                       flexDirection: "column",
-                      width: "310px",
+                      width: "100%",
                       padding: "0",
                       borderRadius: "18px",
                       overflow: "hidden",

@@ -175,7 +175,7 @@ const RequirementsListing = ({ user }) => {
           </div>
 
           {/* Search Input */}
-          <div style={{ minWidth: "280px" }}>
+          <div style={{ width: "100%", maxWidth: "340px", flex: "1 1 240px" }}>
             <div style={{ position: "relative" }}>
               <input
                 type="text"
@@ -216,12 +216,7 @@ const RequirementsListing = ({ user }) => {
             </Link>
           </div>
         ) : (
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, 310px)",
-            gap: "1.5rem",
-            justifyContent: "flex-start"
-          }}>
+          <div className="responsive-cards-grid">
             {filteredRequirements.map(req => {
               const formattedBudget = req.budget
                 ? (String(req.budget).startsWith("₹") ? req.budget : `₹ ${req.budget}`)
@@ -234,7 +229,7 @@ const RequirementsListing = ({ user }) => {
                   style={{ 
                     display: "flex", 
                     flexDirection: "column",
-                    width: "310px",
+                    width: "100%",
                     padding: "0",
                     borderRadius: "18px",
                     overflow: "hidden",

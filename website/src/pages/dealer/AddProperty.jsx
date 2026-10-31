@@ -212,7 +212,7 @@ const AddProperty = ({ user }) => {
         <p style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>Select computer image files to upload directly to backend public folder</p>
       </div>
 
-      <div className="card" style={{ padding: "2rem" }}>
+      <div className="card" style={{ padding: "clamp(1rem, 3.5vw, 2rem)" }}>
         <form onSubmit={handleSubmit}>
           {/* Property Title / Name */}
           <div style={{ marginBottom: "1.25rem" }}>
@@ -228,7 +228,7 @@ const AddProperty = ({ user }) => {
           </div>
 
           {/* Category & Subcategory */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.25rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))", gap: "1rem", marginBottom: "1.25rem" }}>
             <div>
               <label style={labelStyle}>Category</label>
               <select 
@@ -257,7 +257,7 @@ const AddProperty = ({ user }) => {
           </div>
 
           {/* Dimensions (Height & Width in feet) */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem", marginBottom: "1.25rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 150px), 1fr))", gap: "1rem", marginBottom: "1.25rem" }}>
             <div>
               <label style={labelStyle}>Height (Foot)</label>
               <input 
@@ -294,7 +294,7 @@ const AddProperty = ({ user }) => {
           </div>
 
           {/* Location & Area */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.25rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))", gap: "1rem", marginBottom: "1.25rem" }}>
             <div>
               <label style={labelStyle}>Location</label>
               <input 
@@ -321,7 +321,7 @@ const AddProperty = ({ user }) => {
           </div>
 
           {/* Society & Flat No */}
-          <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "1rem", marginBottom: "1.25rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 200px), 1fr))", gap: "1rem", marginBottom: "1.25rem" }}>
             <div>
               <label style={labelStyle}>Society Name</label>
               <input 
