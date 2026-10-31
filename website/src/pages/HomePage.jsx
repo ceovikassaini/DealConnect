@@ -530,33 +530,22 @@ const HomePage = ({ user }) => {
                     <div style={{ position: "relative", height: "175px", overflow: "hidden", backgroundColor: "#f3f4f6" }}>
                       <img src={imgSrc} alt={prop.title || prop.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       
-                      {/* Floating Badges */}
-                      <div style={{ position: "absolute", top: "12px", left: "12px" }}>
-                        <span style={{ 
-                          backgroundColor: "rgba(254, 243, 199, 0.95)", 
-                          color: "#d97706", 
-                          fontSize: "0.72rem", 
-                          fontWeight: "800", 
-                          padding: "0.3rem 0.65rem", 
-                          borderRadius: "8px", 
-                          border: "1px solid #fde68a" 
-                        }}>
-                          Premium
-                        </span>
-                      </div>
-
-                      <div style={{ position: "absolute", top: "12px", right: "12px" }}>
-                        <span style={{ 
-                          backgroundColor: "rgba(99, 102, 241, 0.95)", 
-                          color: "#ffffff", 
-                          fontSize: "0.72rem", 
-                          fontWeight: "800", 
-                          padding: "0.3rem 0.65rem", 
-                          borderRadius: "8px" 
-                        }}>
-                          Featured
-                        </span>
-                      </div>
+                      {/* Floating Badges: Only show if badge_id is present in database */}
+                      {Boolean(prop.badge_id && (prop.badge || prop.badge_name)) && (
+                        <div style={{ position: "absolute", top: "12px", left: "12px" }}>
+                          <span style={{ 
+                            backgroundColor: "rgba(254, 243, 199, 0.95)", 
+                            color: "#d97706", 
+                            fontSize: "0.72rem", 
+                            fontWeight: "800", 
+                            padding: "0.3rem 0.65rem", 
+                            borderRadius: "8px", 
+                            border: "1px solid #fde68a" 
+                          }}>
+                            {prop.badge || prop.badge_name}
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Card Body */}

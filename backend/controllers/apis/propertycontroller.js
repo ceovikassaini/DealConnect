@@ -63,6 +63,9 @@ module.exports = {
       if (db.dealer_requirements) {
         includeArr.push({ model: db.dealer_requirements, as: "dealer_requirement", required: false });
       }
+      if (db.badge) {
+        includeArr.push({ model: db.badge, as: "badge", required: false });
+      }
 
       const list = await db.property.findAll({
         where: whereCond,
@@ -82,11 +85,15 @@ module.exports = {
           imgArr = ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"];
         }
 
+        const badgeName = (p.badge && p.badge.name) ? p.badge.name : null;
+
         return {
           ...p,
           title: p.name || p.title || "Property Listing",
           dealerId: p.dealer_id || p.user_id,
-          images: imgArr
+          images: imgArr,
+          badge_name: badgeName,
+          badge: badgeName
         };
       });
 
@@ -116,6 +123,9 @@ module.exports = {
       if (db.dealer_requirements) {
         includeArr.push({ model: db.dealer_requirements, as: "dealer_requirement", required: false });
       }
+      if (db.badge) {
+        includeArr.push({ model: db.badge, as: "badge", required: false });
+      }
 
       const item = await db.property.findByPk(id, { include: includeArr });
 
@@ -135,11 +145,15 @@ module.exports = {
         imgArr = ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80"];
       }
 
+      const badgeName = (p.badge && p.badge.name) ? p.badge.name : null;
+
       const formatted = {
         ...p,
         title: p.name || p.title || "Property Listing",
         dealerId: p.dealer_id || p.user_id,
-        images: imgArr
+        images: imgArr,
+        badge_name: badgeName,
+        badge: badgeName
       };
 
       return res.status(200).json({

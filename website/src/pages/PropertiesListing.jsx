@@ -256,9 +256,11 @@ const PropertiesListing = ({ user }) => {
                       }}
                       style={{ width: "100%", height: "100%", objectFit: imgSrc !== "/logo.png" ? "cover" : "contain", padding: imgSrc !== "/logo.png" ? "0" : "12px" }} 
                     />
-                    <span className="badge badge-verified" style={{ position: "absolute", top: "12px", left: "12px" }}>
-                      {prop.badge || "Verified"}
-                    </span>
+                    {Boolean(prop.badge_id && (prop.badge || prop.badge_name)) && (
+                      <span className="badge badge-verified" style={{ position: "absolute", top: "12px", left: "12px" }}>
+                        {prop.badge || prop.badge_name}
+                      </span>
+                    )}
 
                     {!isSubscribed && (
                       <span 
