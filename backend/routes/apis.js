@@ -56,6 +56,8 @@ module.exports = (io) => {
   router.get('/properties/:id', propertycontroller.getPropertyById);
   router.post('/add_property', propertycontroller.addProperty);
   router.post('/properties', propertycontroller.addProperty);
+  router.put('/properties/:id', propertycontroller.updatePropertyStatus);
+  router.post('/properties/:id/status', propertycontroller.updatePropertyStatus);
   router.delete('/delete_property/:id', propertycontroller.deleteProperty);
   router.delete('/properties/:id', propertycontroller.deleteProperty);
   router.post('/delete_property', propertycontroller.deleteProperty);

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
-import apiInstance from "../../utils/apiInstance";
+import "react-toastify/dist/ReactToastify.css";
+import { FaLock, FaShieldAlt, FaArrowLeft } from "react-icons/fa";
 import "./Login.css";
-import "@fortawesome/fontawesome-free/css/all.min.css";
 
 const ResetPassword = () => {
   const [params] = useSearchParams();
@@ -20,64 +20,92 @@ const ResetPassword = () => {
     }
     setLoading(true);
     try {
-      await apiInstance.post("/resetPassword", { token, newPassword: password });
-      localStorage.setItem("resetpass", "1");
-      navigate("/");
+      const res = await fetch("http://localhost:5000/admin/resetPassword", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, newPassword: password })
+      });
+      const data = await res.json();
+      if (data.success) {
+        localStorage.setItem("resetpass", "1");
+        toast.success("Password reset successfully!");
+        setTimeout(() => navigate("/login"), 1000);
+      } else {
+        toast.error(data.message || "Reset failed");
+      }
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Reset failed");
+      toast.error("An error occurred during password reset");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <>
-      <ToastContainer />
-      <div className="parkez-auth-page bg-gray-200">
-        <main className="main-content mt-0">
-          <div className="page-header align-items-start min-vh-100" style={{ backgroundImage: "url('/loginBackground.jpg')" }}>
-            <span className="mask bg-gradient-dark opacity-6" />
-            <div className="container my-auto">
-              <div className="row">
-                <div className="col-lg-4 col-md-8 col-12 mx-auto parkez-auth-card">
-                  <div className="card z-index-0 fadeIn3 fadeInBottom">
-                    <div className="card-headers p-0 mt-n4 mx-3 z-index-2">
-                      <div className="parkez-auth-header shadow-dark border-radius-lg py-3 pe-1 mt-4">
-                        <div className="text-center">
-                          <img src="/logo-MyRyd.png" alt="myryd" style={{ height: 120, width: "auto", maxWidth: "100%", padding: "0 16px", objectFit: "contain" }} />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="card-body">
-                      <form onSubmit={submit} className="text-start">
-                        <div className="input-group input-group-outline mt-3">
-                          <input
-                            type="password"
-                            className="form-control"
-                            required
-                            placeholder="New password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                          />
-                        </div>
-                        <div className="text-center">
-                          <button type="submit" className="btn bg-info py-2 text-white w-100 my-4 mb-2" disabled={loading || !token}>
-                            {loading ? "Saving…" : "Reset password"}
-                          </button>
-                          <Link to="/" className="text-info">
-                            Back to login
-                          </Link>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
+    <div className="dc-login-wrapper">
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar theme="dark" />
+
+      {/* Floating Ambient Glow Orbs */}
+      <div className="dc-glow-orb dc-glow-orb-1" />
+      <div className="dc-glow-orb dc-glow-orb-2" />
+
+      <div className="dc-login-card">
+        {/* Logo Branding */}
+        <div className="dc-logo-container">
+          <div className="dc-logo-badge">
+            <img 
+              src="/logo.png" 
+              alt="DealConnect Logo" 
+              className="dc-logo-img"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "/dealconect.png";
+              }}
+            />
+          </div>
+
+          <span className="dc-brand-badge">
+            CREDENTIAL SECURITY
+          </span>
+
+          <h1 className="dc-brand-title">
+            Set New <span className="dc-brand-highlight">Password</span>
+          </h1>
+
+          <p className="dc-brand-subtitle">
+            Enter your new secure administrator password below
+          </p>
+        </div>
+
+        <form onSubmit={submit}>
+          <div className="dc-form-group">
+            <label className="dc-label">New Password</label>
+            <div className="dc-input-wrapper">
+              <span className="dc-input-icon">
+                <FaLock />
+              </span>
+              <input 
+                type="password" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter at least 5 characters"
+                required
+                className="dc-input"
+              />
             </div>
           </div>
-        </main>
+
+          <button type="submit" className="dc-submit-btn" disabled={loading}>
+            <FaShieldAlt /> {loading ? "Updating..." : "Update Password"}
+          </button>
+        </form>
+
+        <div className="dc-footer-links">
+          <Link to="/login" className="dc-back-link">
+            <FaArrowLeft size={11} /> Back to Admin Sign In
+          </Link>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -320,6 +320,45 @@ module.exports = {
     }
   },
 
+  // PUT /api/properties/:id or POST /api/properties/:id/status
+  updatePropertyStatus: async (req, res) => {
+    try {
+      const id = req.params.id || req.body.id;
+      const { status, badge_id } = req.body;
+
+      if (!id) {
+        return res.status(400).json({ success: false, message: "Property ID required" });
+      }
+
+      const prop = await db.property.findByPk(id);
+      if (!prop) {
+        return res.status(404).json({ success: false, message: "Property not found" });
+      }
+
+      const updateFields = {};
+      if (status !== undefined) {
+        updateFields.status = Number(status);
+      }
+      if (badge_id !== undefined) {
+        updateFields.badge_id = (badge_id === null || badge_id === "null" || badge_id === "" || badge_id === 0) ? null : Number(badge_id);
+      }
+
+      await prop.update(updateFields);
+
+      return res.status(200).json({
+        success: true,
+        message: "Property updated successfully",
+        property: prop
+      });
+    } catch (err) {
+      console.error("Update property status error:", err);
+      return res.status(500).json({
+        success: false,
+        message: err.message || "Failed to update property status"
+      });
+    }
+  },
+
   // POST /api/upload (Image file upload)
   uploadImage: async (req, res) => {
     try {

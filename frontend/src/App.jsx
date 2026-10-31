@@ -16,6 +16,8 @@ import TestimonialsManagement from "./pages/admin/TestimonialsManagement";
 import ReportsAnalytics from "./pages/admin/ReportsAnalytics";
 import AdminSettings from "./pages/admin/AdminSettings";
 import Login from "./pages/admin/Login";
+import ForgotPassword from "./pages/admin/ForgotPassword";
+import ResetPassword from "./pages/admin/ResetPassword";
 
 const App = () => {
   return (
@@ -23,6 +25,8 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Admin Dashboard Routes */}
         <Route path="/admin" element={<AdminLayout />}>

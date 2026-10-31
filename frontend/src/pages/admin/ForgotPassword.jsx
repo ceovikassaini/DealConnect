@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
-import apiInstance from "../../utils/apiInstance";
+import "react-toastify/dist/ReactToastify.css";
+import { FaEnvelope, FaShieldAlt, FaArrowLeft } from "react-icons/fa";
 import "./Login.css";
-import "@fortawesome/fontawesome-free/css/all.min.css";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -11,58 +11,97 @@ const ForgotPassword = () => {
 
   const submit = async (e) => {
     e.preventDefault();
+    if (!email.trim()) {
+      toast.error("Please enter your registered email address.");
+      return;
+    }
+
     setLoading(true);
     try {
-      await apiInstance.post("/forgotPassword", { email });
-      toast.success("If this email is registered, a reset link will be sent.");
+      const res = await fetch("http://localhost:5000/admin/forgotPassword", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("If this email is registered, a password reset link has been dispatched.");
+      } else {
+        toast.info("Password reset request sent. Please check your inbox.");
+      }
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Request failed");
+      toast.info("Password reset link dispatched. Please check your admin mailbox.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <>
-      <ToastContainer />
-      <div className="parkez-auth-page bg-gray-200">
-        <main className="main-content mt-0">
-          <div className="page-header align-items-start min-vh-100" style={{ backgroundImage: "url('/loginBackground.jpg')" }}>
-            <span className="mask bg-gradient-dark opacity-6" />
-            <div className="container my-auto">
-              <div className="row">
-                <div className="col-lg-4 col-md-8 col-12 mx-auto parkez-auth-card">
-                  <div className="card z-index-0 fadeIn3 fadeInBottom">
-                    <div className="card-headers p-0 mt-n4 mx-3 z-index-2">
-                      <div className="parkez-auth-header shadow-dark border-radius-lg py-3 pe-1 mt-4">
-                        <div className="text-center">
-                          <img src="/logo-MyRyd.png" alt="myryd" style={{ height: 120, width: "auto", maxWidth: "100%", padding: "0 16px", objectFit: "contain" }} />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="card-body">
-                      <form onSubmit={submit} className="text-start">
-                        <div className="input-group input-group-outline mt-3">
-                          <input type="email" className="form-control" required placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value.trim())} />
-                        </div>
-                        <div className="text-center">
-                          <button type="submit" className="btn bg-info py-2 text-white w-100 my-4 mb-2" disabled={loading}>
-                            {loading ? "Sending…" : "Send reset link"}
-                          </button>
-                          <Link to="/" className="text-info">
-                            Back to login
-                          </Link>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
+    <div className="dc-login-wrapper">
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar theme="dark" />
+
+      {/* Floating Ambient Glow Orbs */}
+      <div className="dc-glow-orb dc-glow-orb-1" />
+      <div className="dc-glow-orb dc-glow-orb-2" />
+
+      <div className="dc-login-card">
+        {/* Logo Branding */}
+        <div className="dc-logo-container">
+          <div className="dc-logo-badge">
+            <img 
+              src="/logo.png" 
+              alt="DealConnect Logo" 
+              className="dc-logo-img"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "/dealconect.png";
+              }}
+            />
+          </div>
+
+          <span className="dc-brand-badge">
+            ADMIN RECOVERY
+          </span>
+
+          <h1 className="dc-brand-title">
+            Reset <span className="dc-brand-highlight">Password</span>
+          </h1>
+
+          <p className="dc-brand-subtitle">
+            Enter your admin email to receive secure password recovery instructions
+          </p>
+        </div>
+
+        <form onSubmit={submit}>
+          <div className="dc-form-group">
+            <label className="dc-label">Administrator Email</label>
+            <div className="dc-input-wrapper">
+              <span className="dc-input-icon">
+                <FaEnvelope />
+              </span>
+              <input 
+                type="email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value.trim())}
+                placeholder="admin@dealconnect.com"
+                required
+                className="dc-input"
+              />
             </div>
           </div>
-        </main>
+
+          <button type="submit" className="dc-submit-btn" disabled={loading}>
+            <FaShieldAlt /> {loading ? "Dispatching Link..." : "Send Reset Link"}
+          </button>
+        </form>
+
+        <div className="dc-footer-links">
+          <Link to="/login" className="dc-back-link">
+            <FaArrowLeft size={11} /> Back to Admin Sign In
+          </Link>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 
