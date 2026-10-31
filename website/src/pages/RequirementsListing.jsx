@@ -38,8 +38,7 @@ const RequirementsListing = ({ user }) => {
 
   const fetchUserRequirements = () => {
     setLoading(true);
-    const query = user?.id ? `userId=${user.id}&role=${user.role || "user"}` : "";
-    fetch(`${API_BASE}/get_requirements?${query}`)
+    fetch(`${API_BASE}/get_requirements`)
       .then(res => res.json())
       .then(data => {
         setLoading(false);
@@ -55,6 +54,15 @@ const RequirementsListing = ({ user }) => {
             ];
             const imgSrc = r.image || defaultImages[idx % defaultImages.length];
 
+            let resolvedType = "Buy";
+            if (r.reqType === 1 || r.reqType === "1" || r.reqType === "Rent" || r.reqType === 2 || r.reqType === "2") {
+              resolvedType = (r.reqType === 2 || r.reqType === "2" || r.reqType === "Rent") ? "Rent" : "Buy";
+            } else if (r.reqType === 3 || r.reqType === "3" || r.reqType === "Lease") {
+              resolvedType = "Lease";
+            } else if (typeof r.reqType === "string" && r.reqType.trim() !== "") {
+              resolvedType = r.reqType;
+            }
+
             return {
               id: r.id,
               title: r.title,
@@ -62,7 +70,7 @@ const RequirementsListing = ({ user }) => {
               budget: r.budget,
               minBudget: r.minBudget,
               maxBudget: r.maxBudget,
-              reqType: r.reqType || "Buy",
+              reqType: resolvedType,
               categoryName: r.category?.name || "Property",
               subCategoryName: r.subcategory?.name || "Residential",
               description: r.description || "",
@@ -70,7 +78,7 @@ const RequirementsListing = ({ user }) => {
               date: r.createdAt ? new Date(r.createdAt).toISOString().split("T")[0] : "2026-08-16",
               dealerName: r.dealer?.name || r.user?.name || r.dealerName || user?.name || "vikasdeler",
               status: r.status || "Active",
-              image: r.image && r.image.trim() !== "" ? r.image : "/logo.png"
+              image: r.image && r.image.trim() !== "" ? r.image : imgSrc
             };
           });
           setRequirements(formatted);
@@ -95,13 +103,20 @@ const RequirementsListing = ({ user }) => {
 
   // Filtered Requirements
   const filteredRequirements = requirements.filter(req => {
-    const matchesType = filterType === "All" || req.reqType.toLowerCase() === filterType.toLowerCase();
+    const reqTypeStr = String(req.reqType || "").toLowerCase();
+    const filterTypeStr = String(filterType || "").toLowerCase();
+    const matchesType = filterType === "All" || reqTypeStr === filterTypeStr;
+    const searchLower = (searchQuery || "").toLowerCase();
     const matchesSearch =
-      req.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      req.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      req.categoryName.toLowerCase().includes(searchQuery.toLowerCase());
+      (req.title || "").toLowerCase().includes(searchLower) ||
+      (req.location || "").toLowerCase().includes(searchLower) ||
+      (req.categoryName || "").toLowerCase().includes(searchLower) ||
+      (req.subCategoryName || "").toLowerCase().includes(searchLower);
     return matchesType && matchesSearch;
   });
+
+  // Alias for backward-compatibility
+  const filtered = filteredRequirements;
 
   return (
     <div style={{ backgroundColor: "var(--bg-main)", minHeight: "85vh", padding: "3rem 0" }}>
@@ -111,15 +126,15 @@ const RequirementsListing = ({ user }) => {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", flexWrap: "wrap", gap: "1rem" }}>
           <div>
             <h1 style={{ fontSize: "2.2rem", fontWeight: "800", marginBottom: "0.5rem" }}>
-              Property Requirements {filtered.length > 0 && <span style={{ fontSize: "1.4rem", color: "var(--primary)" }}>({filtered.length})</span>}
+              Property Requirements {filteredRequirements.length > 0 && <span style={{ fontSize: "1.4rem", color: "var(--primary)" }}>({filteredRequirements.length})</span>}
             </h1>
             <p style={{ color: "var(--text-muted)" }}>
-              Browse and manage {filtered.length} buyer/tenant requirements live on DealConnect
+              Browse and manage {filteredRequirements.length} buyer/tenant requirements live on DealConnect
             </p>
           </div>
 
           <Link
-            to={user.role === "dealer" || user.role === 2 || user.role === "2" ? "/dealer/add-requirement" : "/user/dashboard"}
+            to={user?.role === "dealer" || user?.role === 2 || user?.role === "2" ? "/dealer/add-requirement" : "/user/dashboard"}
             onClick={(e) => {
               if (!isSubscribed) {
                 e.preventDefault();
@@ -193,7 +208,7 @@ const RequirementsListing = ({ user }) => {
             <h3 style={{ fontSize: "1.3rem", fontWeight: "700", marginBottom: "0.5rem" }}>No Property Requirements Found</h3>
             <p style={{ fontSize: "0.9rem", marginBottom: "1.5rem" }}>Try clearing your search query or click below to post a new requirement.</p>
             <Link
-              to={user.role === "dealer" || user.role === 2 || user.role === "2" ? "/dealer/add-requirement" : "/user/dashboard"}
+              to={user?.role === "dealer" || user?.role === 2 || user?.role === "2" ? "/dealer/add-requirement" : "/user/dashboard"}
               className="btn-primary"
               style={{ margin: "0 auto", display: "inline-flex", alignItems: "center", gap: "0.4rem" }}
             >
@@ -208,7 +223,9 @@ const RequirementsListing = ({ user }) => {
             justifyContent: "flex-start"
           }}>
             {filteredRequirements.map(req => {
-              const formattedBudget = req.budget.startsWith("₹") ? req.budget : `₹ ${req.budget}`;
+              const formattedBudget = req.budget
+                ? (String(req.budget).startsWith("₹") ? req.budget : `₹ ${req.budget}`)
+                : (req.minBudget && req.maxBudget ? `${formatCurrency(req.minBudget)} - ${formatCurrency(req.maxBudget)}` : "Negotiable");
 
               return (
                 <div 

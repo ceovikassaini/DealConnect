@@ -298,7 +298,7 @@ const PropertiesListing = ({ user }) => {
                     </h3>
                     
                     <p style={{ fontSize: "0.82rem", color: "var(--text-muted)", marginBottom: "0.85rem", display: "flex", alignItems: "center", gap: "0.35rem", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                      <FaMapMarkerAlt color="var(--primary)" size={13} flexShrink={0} /> {prop.location || "Sonipat, Haryana"}
+                      <FaMapMarkerAlt color="var(--primary)" size={13} style={{ flexShrink: 0 }} /> {prop.location || "Sonipat, Haryana"}
                     </p>
 
                     <div style={{ display: "flex", alignItems: "baseline", gap: "0.6rem", marginBottom: "1rem" }}>
